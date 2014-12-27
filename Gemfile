@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
 # Use mysql as the database for Active Record
@@ -25,6 +24,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'bootstrap-sass'
 gem 'devise'
+gem 'paperclip'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
