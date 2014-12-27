@@ -11,7 +11,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141227024935) do
+ActiveRecord::Schema.define(version: 20141227030024) do
+
+  create_table "groups", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.boolean  "main",       limit: 1
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  create_table "groups_resources", id: false, force: :cascade do |t|
+    t.integer "group_id",    limit: 4, null: false
+    t.integer "resource_id", limit: 4, null: false
+  end
+
+  create_table "resources", force: :cascade do |t|
+    t.string   "name",              limit: 255
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+    t.string   "file_file_name",    limit: 255
+    t.string   "file_content_type", limit: 255
+    t.integer  "file_file_size",    limit: 4
+    t.datetime "file_updated_at"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "", null: false

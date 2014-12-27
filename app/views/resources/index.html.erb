@@ -1,25 +1,116 @@
 <p id="notice"><%= notice %></p>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h5>Groups</h5>
+    <ul id="group_nav" class="nav nav-pills">
+      <%@groups.each do |group|%>
+        <li id="<%=group.name%>"><a><%=group.name.capitalize%></a></li>
+      <%end%>
+    </ul>
+    <h5>Types</h5>
+    <ul id="type_nav" class="nav nav-pills">
+      <li id="image"><a>Images</a></li>
+      <li id="gif"><a>Gifs</a></li>
+      <li id="shuffle"><a>Shuffle</a></li>
+      <li id="group_filter"><a>Group Filter</a></li>
+    </ul>
+  </div></div>
+<div id="destroyModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p>Are you sure you want to destroy this resource?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a href="" class="btn btn-primary">Save changes</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <input class="btn btn-default"type="button" id="toggle-form" value="Toggle Form">
+  <a class="btn btn-default" href="/resources/new">New Cenfile</a>
+</div>
+<%@resources.each do |resource|%>
+  <%if resource.type == 'video'%>
+    <%= jwplayer(file: 'kayden.mp4') %>
+  <%elsif resource.type == 'swf'%>
+    <embed src="<%=resource.location%>">
+  <%else%>
+    <%= image_tag resource.location %>
+  <%end%>
+  <form id="form-<%=resource.id%>" class="cen-form">
+    <%=link_to '&times;'.html_safe, resources_path(resource), method: :delete, class: 'cen-close close'%>
+    <%@main_groups.each do |group|%>
+      <label class="checkbox-inline">
+        <input id="group-<%=group.id%>-<%=resource.id%>" onclick="checkClick(this.checked, <%=resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
+      </label>
+    <%end%>
+  </form>
+<%end%>
+<a href="#brand">Back to Top</a>
+<script>
+  function checkNav() {
+    $('.nav li').removeClass('active');
+    <%params.each do |key, value|%>
+    <%if key == "groups"%>
+    <%value.each do |group, val|%>
+    if(<%=val%>) {
+      $('#<%=group%>').addClass('active');
+    }
+    <%end%>
+    <%elsif key == "types"%>
+    <%value.each do |type, val|%>
+    if(<%=val%>) {
+      $('#<%=type%>').addClass('active');
+    }
+    <%end%>
+    <%end%>
+    <%end%>
+  }
 
-<h1>Listing Resources</h1>
+  $('#toggle-form').click(function() {
+    $('.cen-form').toggle();
+  });
 
-<table>
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+  $('.cen-close').click(function() {
+    href = $(this).attr('data-href');
+    $('#destroyModal a').attr('href', href);
+    $('#destroyModal').modal('show');
+  });
 
-  <tbody>
-    <% @resources.each do |resource| %>
-      <tr>
-        <td><%= link_to 'Show', resource %></td>
-        <td><%= link_to 'Edit', edit_resource_path(resource) %></td>
-        <td><%= link_to 'Destroy', resource, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+  function checkClick(checked, id, group_id) {
+    val = $('#group-'+group_id+'-'+id).val();
+    $.ajax({
+      url: "/resources/"+id,
+      type: "POST",
+      data: {'group' : val, 'checked' : checked},
+      dataType: "html"
+    });
+  }
 
-<br>
+  $(".nav-pills li a").click(function() {
+    id  = $(this).parent().attr('id');
+    console.log(!$(this).parent().hasClass('active'));
+    if(id == 'image' || id == 'gif' && !$(this).parent().hasClass('active')) {
+      $('#image').removeClass('active');
+      $('#gif').removeClass('active');
+    }
+    $(this).parent().toggleClass('active');
+    group_filter = $("#group_nav.nav-pills li.active");
+    type_filter = $("#type_nav.nav-pills li.active");
+    groups = [];
+    types = [];
+    for(i=0; i < group_filter.length; i++ ) {
+      groups[i] = 'groups['+group_filter[i].id+']=true';
+    }
+    for(i=0; i < type_filter.length; i++ ) {
+      types[i] = 'types['+type_filter[i].id+']=true';
+    }
+    query = groups.concat(types);
+    window.location.search = '?'+query.join('&');
+  });
 
-<%= link_to 'New Resource', new_resource_path %>
+  $(checkNav());
+</script>

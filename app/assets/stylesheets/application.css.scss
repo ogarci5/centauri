@@ -1,0 +1,63 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ *
+ *= require_self
+ */
+
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+#brand {
+  text-align:center;
+  a {
+    text-decoration:none;
+    color:#333;
+  }
+}
+
+.cen-image {
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+  max-width:1280px;
+}
+.cen-form {
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  .row{
+    display: block;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+  }
+}
+.cen-close {
+  float:none;
+  font-size:14px;
+}
+.cen-item:hover {
+  color:#d55700;
+  cursor:pointer;
+}
+.highlight {
+  background-color: #b33500;
+  color: #fff;
+}
+.highlight:hover {
+  color: #fff;
+}
+
+#directories {
+  width: 100%;
+}

@@ -5,7 +5,10 @@ class ResourcesController < ApplicationController
 
   def index
     @resources = Resource.all
-    respond_with(@resources)
+    @resources.randomize if params[:types] && params[:types][:shuffle] == "true"
+    #@cenfiles = @cenfiles.partition {|c| !c.groups.empty?}.flatten if params[:types] && params[:types][:group_filter] == "true"
+    @groups = Group.all
+    @main_groups = Group.where(main: true)
   end
 
   def show
@@ -42,6 +45,6 @@ class ResourcesController < ApplicationController
     end
 
     def resource_params
-      params[:resource]
+      params.require(:resource).permit(:file, :name)
     end
 end

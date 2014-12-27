@@ -4,11 +4,16 @@
   <title>Centauri</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <script type="text/javascript" src="/javascripts/jwplayer.js"></script>
+  <script type="text/javascript" src="/javascripts/jwplayer.html5.js"></script>
+  <script type="text/javascript">jwplayer.key="zFti9XpFxGIA+sn8MjK9qBGcEf8pnMuXCV8JHw==";</script>
+
   <%= csrf_meta_tags %>
 </head>
 <body>
-
-<%= yield %>
-
+<div class="container-fluid">
+  <h3 id="brand"><a href="/">Centauri</a></h3>
+  <%=yield%>
+</div>
 </body>
 </html>
