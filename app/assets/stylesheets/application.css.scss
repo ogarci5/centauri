@@ -10,8 +10,55 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
+ *= require rails_bootstrap_forms
  *= require_self
  */
 
 @import "bootstrap-sprockets";
 @import "bootstrap";
+
+#brand {
+  text-align:center;
+  a {
+    text-decoration:none;
+    color:#333;
+  }
+}
+
+.cen-image {
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+  max-width:1280px;
+}
+.resource-form {
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  .row{
+    display: block;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+  }
+}
+.resource-close {
+  float:none;
+  font-size:14px;
+}
+.cen-item:hover {
+  color:#d55700;
+  cursor:pointer;
+}
+.highlight {
+  background-color: #b33500;
+  color: #fff;
+}
+.highlight:hover {
+  color: #fff;
+}
+
+#directories {
+  width: 100%;
+}

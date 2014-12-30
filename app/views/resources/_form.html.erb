@@ -1,21 +1,58 @@
-<%= form_for(@resource, :html => { :multipart => true }) do |f| %>
-  <% if @resource.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@resource.errors.count, "error") %> prohibited this resource from being saved:</h2>
-
-      <ul>
-      <% @resource.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.file_field :file %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+<%= bootstrap_form_for(@resource, :html => { :multipart => true }) do |f| %>
+  <%= f.alert_message 'Please fix the errors below.' %>
+  <%= f.file_field :file %>
+  <%= f.primary %>
 <% end %>
+<%= form_for(@resource, :html => { :multipart => true, class: 'center-block col-md-6 col-md-offset-3'}) do |f| %>
+<div class="form-group">
+  <label for="cenfile_address">Local Address</label>
+  <input name="address" type="text" class="form-control" id="cenfile_address" placeholder="Address">
+  <a class="btn btn-default" id="address">Submit</a>
+</div>
+<table id="directories">
+  <tr>
+    <td>Current directory: <strong id="current_directory"><%=Dir.pwd%></strong></td>
+  </tr>
+  <%@list.each do |item|%>
+    <tr>
+      <td><span class="cen-item cen-<%=item[:type]%>"><%=item[:name]%></span></td>
+    </tr>
+  <%end%>
+</table>
+<input name="directory" type="hidden" value="false" />
+<input type="checkbox" id="directory" name="directory" value="true" />Directory?
+<input name="resource[location2]" type="hidden" class="form-control" id="cenfile_location2">
+<br>
+<input id="new_cenfile" type="submit" class="btn btn-primary" value="Submit">
+  <%end%>
+<script>
+  $('span.cen-directory').click(function() {
+    text = $(this).text();
+    full_dir = '<%=Dir.pwd%>/'+text;
+    $('#directories').load('/resources/new?dir='+full_dir);
+  });
+  $('span.cen-file').click(function() {
+    $('.cen-file').removeClass('highlight');
+    $(this).addClass('highlight');
+    text = $(this).text();
+    full_dir = '<%=Dir.pwd%>/'+text;
+    $('#cenfile_address').val(full_dir);
+    $('#cenfile_location2').val(full_dir);
+  });
+  $('#address').click(function() {
+    full_dir = $('#cenfile_address').val();
+    $('#cenfile_address').val('');
+    $('#directories').load('/resources/new?dir='+full_dir);
+  });
+  $('#new_cenfile').click(function() {
+    if($('#directory').attr('checked') != undefined) {
+      $('#cenfile_location2').val($('#current_directory').text());
+      $('#groupModal').modal('show');
+    } else {
+      $('#new_cenfile_form').submit();
+    }
+  });
+  $('#new_directory').click(function() {
+    $('#new_cenfile_form').append($('#new_group').css('display', 'none')).submit();
+  });
+</script>
