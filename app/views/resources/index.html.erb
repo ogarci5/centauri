@@ -34,14 +34,14 @@
 </div>
 <%@resources.each do |resource|%>
   <%if resource.type == 'video'%>
-    <%= jwplayer(file: 'kayden.mp4') %>
+    <%= jwplayer(file: resource.location) %>
   <%elsif resource.type == 'swf'%>
     <embed src="<%=resource.location%>">
   <%else%>
     <%= image_tag resource.location %>
   <%end%>
   <form id="form-<%=resource.id%>" class="cen-form">
-    <%=link_to '&times;'.html_safe, resources_path(resource), method: :delete, class: 'cen-close close'%>
+    <%=link_to '&times;'.html_safe, "/resources/#{resource.id}", method: :delete, class: 'cen-close close'%>
     <%@main_groups.each do |group|%>
       <label class="checkbox-inline">
         <input id="group-<%=group.id%>-<%=resource.id%>" onclick="checkClick(this.checked, <%=resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
