@@ -1,7 +1,9 @@
 class ResourcesController < ApplicationController
   before_action :set_resource, only: [:show, :edit, :update, :destroy]
+  skip_before_filter :verify_authenticity_token, :only=> :create
+  skip_before_filter :authenticate_user!, :only=> :create
 
-  respond_to :html
+  respond_to :html, :json
 
   def index
     @resources = Resource.all
@@ -24,7 +26,18 @@ class ResourcesController < ApplicationController
   end
 
   def create
-    @resource = Resource.new(resource_params)
+    if resource_params[:url].present?
+      prev = Dir.entries('./')
+      `wget #{resource_params[:url]}`
+      path = (Dir.entries('./') - prev)[0]
+      @resource = Resource.new
+      File.open(path) do |f|
+	@resource.file = f
+        @resource.save
+      end
+    else
+      @resource = Resource.new(resource_params)
+    end
     @resource.save
     respond_with(@resource)
   end
@@ -45,6 +58,6 @@ class ResourcesController < ApplicationController
     end
 
     def resource_params
-      params.require(:resource).permit(:file, :name)
+      params.require(:resource).permit(:file, :name, :url)
     end
 end
