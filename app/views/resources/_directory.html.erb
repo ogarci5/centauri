@@ -1,11 +1,12 @@
-<tr>
-	<td>Current directory: <strong id="current_directory"><%=@new_dir%></strong></td>
-</tr>
-<%@list.each do |item|%>
-<tr>
-	<td><span class="cen-item cen-<%=item[:type]%>"><%=item[:name]%></span></td>
-</tr>
-<%end%>
+<tbody>
+  <%@list.each_slice(5).each do |list|%>
+    <tr>
+      <%list.each do |item|%>
+        <td colspan="<%=item == @list.last ? 5 : nil%>"><span class="cen-item cen-<%=item[:type]%>"><%=item[:name]%></span></td>
+      <%end%>
+    </tr>
+  <%end%>
+</tbody>
 <script>
 $('span.cen-directory').click(function() {
   text = $(this).text();
@@ -17,7 +18,10 @@ $('span.cen-file').click(function() {
   $(this).addClass('highlight');
   text = $(this).text();
   full_dir = '<%=@new_dir%>'+text;
-  $('#cenfile_address').val(full_dir);
-  $('#cenfile_location2').val(full_dir);
+  $('#resource_address').val(full_dir);
+  $('#resource_location2').val(full_dir);
+});
+$(function() {
+  $('#current_directory').text('<%=@new_dir%>');
 });
 </script>

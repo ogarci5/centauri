@@ -22,4 +22,8 @@ class Resource < ActiveRecord::Base
   def location
     self.file.url
   end
+
+  def file_from_url(url)
+    self.file = URI.parse(url)
+  end
 end

@@ -12,7 +12,7 @@ class ResourcesController < ApplicationController
     else
       @resources = @resources.paginate(page: params[:page], per_page: 10)
     end
-    @resources = @resources.where
+    @resources = @resources
     #@cenfiles = @cenfiles.partition {|c| !c.groups.empty?}.flatten if params[:types] && params[:types][:group_filter] == "true"
     @groups = Group.all
     @main_groups = Group.where(main: true)
@@ -66,13 +66,8 @@ class ResourcesController < ApplicationController
     files.sort!.collect! {|f| {name: f, type: 'file'}}
     @list = dirs + files
     if resource_params[:url].present?
-      prev = Dir.entries('./')
-      `wget #{resource_params[:url]}`
-      path = (Dir.entries('./') - prev)[0]
       @resource = Resource.new
-      File.open(path) do |f|
-	      @resource.file = f
-      end
+      @resource.file = URI.parse(resource_params[:url])
     elsif resource_params[:location2].present?
       @resource = Resource.new
       File.open(resource_params[:location2]) do |f|

@@ -3,27 +3,44 @@
   <%= f.file_field :file %>
   <%= f.primary %>
 <% end %>
-<%= form_for(@resource, :html => { :multipart => true, class: 'center-block col-md-6 col-md-offset-3'}) do |f| %>
-<div class="form-group">
-  <label for="cenfile_address">Local Address</label>
-  <input name="address" type="text" class="form-control" id="cenfile_address" placeholder="Address">
-  <a class="btn btn-default" id="address">Submit</a>
+<%= bootstrap_form_for(@resource, html: { multipart: true, class: 'center-block col-md-6 col-md-offset-3'}) do |f| %>
+  <div class="panel panel-centauri">
+  <div class="panel-heading">
+    Local Address
+  </div>
+  <div class="panel-body">
+    <div class="input-group form-group">
+      <span class="input-group-addon">cd</span>
+      <input name="address" type="text" class="form-control" id="resource_address" placeholder="/your/directory/here">
+      <span class="input-group-btn">
+        <a class="btn btn-default" id="address">Submit</a>
+      </span>
+    </div>
+    Current directory: <strong id="current_directory"><%=Dir.pwd%></strong>
+  </div>
+  <table id="directories" class="table table-condensed table-bordered">
+    <tbody>
+      <%@list.each_slice(5).each do |list|%>
+        <tr>
+          <%list.each do |item|%>
+            <td colspan="<%=item == @list.last ? 5 : nil%>"><span class="cen-item cen-<%=item[:type]%>"><%=item[:name]%></span></td>
+          <%end%>
+        </tr>
+      <%end%>
+    </tbody>
+  </table>
+  <div class="panel-body actions">
+    <div class="form-group">
+      <%=f.submit 'Create', class: 'btn btn-primary pull-right', id: 'create_resource'%>
+      <input name="resource[location2]" type="hidden" class="form-control" id="resource_location2">
+      <div class="checkbox-inline pull-right">
+        <input name="directory" type="hidden" value="false" />
+        <input type="checkbox" id="directory" name="directory" value="true" />Full Directory?
+      </div>
+    </div>
+  </div>
 </div>
-<table id="directories">
-  <tr>
-    <td>Current directory: <strong id="current_directory"><%=Dir.pwd%></strong></td>
-  </tr>
-  <%@list.each do |item|%>
-    <tr>
-      <td><span class="cen-item cen-<%=item[:type]%>"><%=item[:name]%></span></td>
-    </tr>
-  <%end%>
-</table>
-<input name="directory" type="hidden" value="false" />
-<input type="checkbox" id="directory" name="directory" value="true" />Directory?
-<input name="resource[location2]" type="hidden" class="form-control" id="cenfile_location2">
-<br>
-<input id="new_cenfile" type="submit" class="btn btn-primary" value="Submit">
+
   <%end%>
 <script>
   $('span.cen-directory').click(function() {
@@ -36,23 +53,23 @@
     $(this).addClass('highlight');
     text = $(this).text();
     full_dir = '<%=Dir.pwd%>/'+text;
-    $('#cenfile_address').val(full_dir);
-    $('#cenfile_location2').val(full_dir);
+    $('#resource_address').val(full_dir);
+    $('#resource_location2').val(full_dir);
   });
   $('#address').click(function() {
     full_dir = $('#cenfile_address').val();
     $('#cenfile_address').val('');
     $('#directories').load('/resources/new?dir='+full_dir);
   });
-  $('#new_cenfile').click(function() {
+  $('#create_resource').click(function() {
     if($('#directory').attr('checked') != undefined) {
-      $('#cenfile_location2').val($('#current_directory').text());
+      $('#resource_location2').val($('#current_directory').text());
       $('#groupModal').modal('show');
     } else {
-      $('#new_cenfile_form').submit();
+      $('#new_resource').submit();
     }
   });
   $('#new_directory').click(function() {
-    $('#new_cenfile_form').append($('#new_group').css('display', 'none')).submit();
+    $('#new_resource').append($('#new_group').css('display', 'none')).submit();
   });
 </script>
