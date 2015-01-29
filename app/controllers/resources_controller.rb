@@ -24,15 +24,21 @@ class ResourcesController < ApplicationController
 
   def new
     @resource = Resource.new
-    cdir = Dir.pwd
-    cdir = params[:dir] if params[:dir]
+    cdir = params[:dir].presence || Dir.pwd
     dirs = []
     files = []
-    FileUtils.cd(cdir) do
-      @new_dir = FileUtils.pwd+'/'
+    
+    begin
+      FileUtils.cd(cdir) do
+        @new_dir = FileUtils.pwd == '/' ? FileUtils.pwd : FileUtils.pwd+'/'
+      end
+    rescue Errno::ENOENT
+      FileUtils.cd(Dir.pwd) do
+        @new_dir = FileUtils.pwd == '/' ? FileUtils.pwd : FileUtils.pwd+'/'
+      end
     end
 
-    Dir.entries(@new_dir).delete_if {|d| d == '.'}.each do |dir|
+    Dir.entries(@new_dir).delete_if{|d| d == '.'}.each do |dir|
       File.directory?(@new_dir+dir) ? dirs << dir : files << dir
     end
 

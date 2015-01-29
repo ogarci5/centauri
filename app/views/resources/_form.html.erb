@@ -53,10 +53,10 @@
         <div class="panel-body">
           <div class="input-group form-group">
             <span class="input-group-addon">cd</span>
-            <input name="address" type="text" class="form-control" id="resource_address" placeholder="/your/directory/here">
-          <span class="input-group-btn">
-            <a class="btn btn-default" id="submit_address">Submit</a>
-          </span>
+            <input name="address" type="text" class="form-control" id="resource_address" placeholder="/your/directory/here" autocomplete="off">
+            <span class="input-group-btn">
+              <a class="btn btn-default" id="submit_address">Submit</a>
+            </span>
           </div>
           Current directory: <strong id="current_directory"><%=Dir.pwd%></strong>
         </div>
@@ -116,5 +116,12 @@
   });
   $('#new_directory').click(function() {
     $('#new_resource').append($('#new_group').css('display', 'none')).submit();
+  });
+  $('#resource_address').keypress(function(e) {
+    // Enter pressed?
+    if(e.which == 10 || e.which == 13) {
+      e.preventDefault();
+      $('#submit_address').click();
+    }
   });
 </script>
