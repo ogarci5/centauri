@@ -8,18 +8,22 @@ class ResourcesController < ApplicationController
 
   def index
     @resources = Resource.all.includes(:groups)
-    if params[:types].try(:[], :shuffle) == 'true'
+    @resources = @resources.where(groups: {id: params[:groups]}) if params[:groups].present?
+
+    @resources = @resources.for_type(:image) if params[:types].try(:include?, 'image')
+    @resources = @resources.for_type(:gif) if params[:types].try(:include?, 'gif')
+    @resources = @resources.for_type(:video) if params[:types].try(:include?, 'video')
+
+    if params[:controls].try(:include?, 'shuffle')
       cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i
       @resources = @resources.order("RAND(#{cookies[:seed]})")
     else
       cookies.delete(:seed)
     end
-    @resources = @resources.for_type(:image) if params[:types].try(:[], :image) == 'true'
-    @resources = @resources.for_type(:image) if params[:types].try(:[], :gif) == 'true'
-    @resources = @resources.where(groups: {id: nil}) if params[:types].try(:[], :group_filter) == 'true'
+    @resources = @resources.where(groups: {id: nil}) if params[:controls].try(:include?, 'group_filter')
+
     @resources = @resources.paginate(page: params[:page], per_page: 10)
-    #paginate(page: params[:page], per_page: 10)
-    #@cenfiles = @cenfiles.partition {|c| !c.groups.empty?}.flatten if params[:types] && params[:types][:group_filter] == "true"
+    
     @groups = Group.all
     @main_groups = @groups.where(main: true)
   end

@@ -6,7 +6,7 @@
         <h4 class="cen-nav-header">Groups</h4>
         <ul id="group_nav" class="nav nav-pills">
           <%@groups.each do |group|%>
-            <li id="<%=group.name.parameterize%>"><a><%=group.name.titleize%></a></li>
+            <li id="group-<%="#{group.id}"%>"><a><%=group.name.titleize%></a></li>
           <%end%>
         </ul>
       </div>
@@ -78,9 +78,15 @@
 <script>
   function check_nav() {
     $('.nav li').removeClass('active');
-    <%params.select{|k,_| %w(groups types controls).include?(k)}.each do |_, value|%>
-      <%value.each do |val|%>
-        $('#<%=val%>').addClass('active');
+    <%params.select{|k,_| %w(groups types controls).include?(k)}.each do |key, value|%>
+      <%if key == 'groups'%>
+        <%value.each do |group|%>
+          $('#group-<%=group%>').addClass('active');
+        <%end%>
+      <%else%>
+        <%value.each do |val|%>
+          $('#<%=val%>').addClass('active');
+        <%end%>
       <%end%>
     <%end%>
   }
@@ -120,7 +126,7 @@
         controls = [];
 
     for(var i=0; i < group_filter.length; i++ ) {
-      groups[i] = 'groups[]='+group_filter[i].id;
+      groups[i] = 'groups[]='+group_filter[i].id.replace('group-', '');
     }
     for(i=0; i < type_filter.length; i++ ) {
       types[i] = 'types[]='+type_filter[i].id;
