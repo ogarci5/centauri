@@ -68,9 +68,9 @@ class ResourcesController < ApplicationController
     if resource_params[:url].present?
       @resource = Resource.new
       @resource.file = URI.parse(resource_params[:url])
-    elsif resource_params[:location2].present?
+    elsif resource_params[:local].present?
       @resource = Resource.new
-      File.open(resource_params[:location2]) do |f|
+      File.open(resource_params[:local]) do |f|
         @resource.file = f
       end
     else

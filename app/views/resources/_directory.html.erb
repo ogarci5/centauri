@@ -9,17 +9,28 @@
 </tbody>
 <script>
 $('span.cen-directory').click(function() {
-  text = $(this).text();
-  full_dir = '<%=@new_dir%>/'+text;
+  var text = $(this).text(),
+      full_dir = '<%=@new_dir%>/'+text;
   $('#directories').load('/resources/new?dir='+full_dir);
 });
 $('span.cen-file').click(function() {
   $('.cen-file').removeClass('highlight');
   $(this).addClass('highlight');
-  text = $(this).text();
-  full_dir = '<%=@new_dir%>'+text;
+  var text = $(this).text(),
+      full_dir = '<%=@new_dir%>'+text;
   $('#resource_address').val(full_dir);
-  $('#resource_location2').val(full_dir);
+  $('#resource_local').val(full_dir);
+});
+$('#submit_address').click(function() {
+  var text = $('#resource_address').val();
+  if(text[0] == '/'){
+    var full_dir = text;
+  } else {
+    var full_dir = '<%=@new_dir%>'+text;
+  }
+  $('#resource_address').val('');
+  $('#submit_address').unbind('click');
+  $('#directories').load('/resources/new?dir='+full_dir);
 });
 $(function() {
   $('#current_directory').text('<%=@new_dir%>');
