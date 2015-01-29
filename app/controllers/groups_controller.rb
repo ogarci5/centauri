@@ -23,12 +23,12 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(group_params)
     @group.save
-    respond_with(@group)
+    redirect_to groups_path
   end
 
   def update
     @group.update(group_params)
-    respond_with(@group)
+    redirect_to groups_path
   end
 
   def destroy
@@ -42,6 +42,6 @@ class GroupsController < ApplicationController
     end
 
     def group_params
-      params[:group]
+      params.require(:group).permit(:name, :main)
     end
 end

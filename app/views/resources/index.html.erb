@@ -82,16 +82,6 @@
     $('#destroyModal').modal('show');
   });
 
-  function checkClick(checked, id, group_id) {
-    var val = $('#group-'+group_id+'-'+id).val();
-    $.ajax({
-      url: "/resources/"+id,
-      type: "POST",
-      data: {'group' : val, 'checked' : checked},
-      dataType: "html"
-    });
-  }
-
   $(".nav-pills li a").click(function() {
     id  = $(this).parent().attr('id');
     console.log(!$(this).parent().hasClass('active'));

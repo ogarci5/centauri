@@ -1,8 +1,8 @@
 class ResourcesController < ApplicationController
   before_action :set_resource, only: [:show, :edit, :update, :destroy]
   before_action :set_list, only: [:new, :create]
-  skip_before_filter :verify_authenticity_token, :only=> :create
-  skip_before_filter :authenticate_user!, :only=> :create
+  skip_before_filter :verify_authenticity_token, only: :create
+  skip_before_filter :authenticate_user!, only: :create
 
   respond_to :html, :json
 
@@ -20,6 +20,7 @@ class ResourcesController < ApplicationController
   end
 
   def show
+    @main_groups = Group.where(main: true)
     respond_with(@resource)
   end
 

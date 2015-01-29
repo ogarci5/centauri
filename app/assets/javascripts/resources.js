@@ -10,3 +10,13 @@ $(document).ready( function() {
     $('#resource_file_text').val(label);
   });
 });
+
+function checkClick(checked, id, group_id) {
+  var val = $('#group-'+group_id+'-'+id).val();
+  $.ajax({
+    url: "/resources/"+id,
+    type: "POST",
+    data: {'group' : val, 'checked' : checked},
+    dataType: "html"
+  });
+}

@@ -1,4 +1,17 @@
-<p id="notice"><%= notice %></p>
-
-<%= link_to 'Edit', edit_resource_path(@resource) %> |
-<%= link_to 'Back', resources_path %>
+<%if @resource.type == 'video'%>
+  <video class="resource-content" src="<%=@resource.location%>" controls>
+  </video>
+<%elsif @resource.type == 'swf'%>
+  <embed class="resource-content" src="<%=@resource.location%>">
+<%else%>
+  <%= image_tag @resource.location, class: 'resource-content' %>
+<%end%>
+<form id="form-<%=@resource.id%>" class="resource-form">
+  <a data-href="<%=resource_path(@resource)%>" class="resource-close close">&times;</a>
+  <%@main_groups.each do |group|%>
+    <label class="checkbox-inline">
+      <input id="group-<%=group.id%>-<%=@resource.id%>" onclick="checkClick(this.checked, <%=@resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= @resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
+    </label>
+  <%end%>
+</form>
+<%= link_to 'Back', resources_path, class: 'btn btn-default' %>
