@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
-  resources :resources
+  resources :resources do
+    member do
+      post 'update_group'
+    end
+  end
   resources :groups do
     collection do
       get 'toggle'

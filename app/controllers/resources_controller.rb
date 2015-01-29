@@ -1,5 +1,5 @@
 class ResourcesController < ApplicationController
-  before_action :set_resource, only: [:show, :edit, :update, :destroy]
+  before_action :set_resource, only: [:show, :edit, :update, :destroy, :update_group]
   before_action :set_list, only: [:new, :create]
   skip_before_filter :verify_authenticity_token, only: :create
   skip_before_filter :authenticate_user!, only: :create
@@ -7,7 +7,7 @@ class ResourcesController < ApplicationController
   respond_to :html, :json
 
   def index
-    @resources = Resource.all.includes(:groups)
+    @resources = Resource.joins(:groups).uniq
     @resources = @resources.where(groups: {id: params[:groups]}) if params[:groups].present?
 
     @resources = @resources.for_type(:image) if params[:types].try(:include?, 'image')
@@ -23,7 +23,7 @@ class ResourcesController < ApplicationController
     @resources = @resources.where(groups: {id: nil}) if params[:controls].try(:include?, 'group_filter')
 
     @resources = @resources.paginate(page: params[:page], per_page: 10)
-    
+
     @groups = Group.all
     @main_groups = @groups.where(main: true)
   end
@@ -101,6 +101,17 @@ class ResourcesController < ApplicationController
   def destroy
     @resource.destroy
     respond_with(@resource)
+  end
+
+  def update_group
+    if params[:checked] == 'true'
+      @resource.groups = Group.where(id: @resource.group_ids + [params[:group_id].to_i])
+    else
+      @resource.groups = Group.where(id: @resource.group_ids - [params[:group_id].to_i])
+    end
+    @resource.save
+
+    render json: nil, status: :ok
   end
 
   private

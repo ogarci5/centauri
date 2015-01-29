@@ -11,12 +11,11 @@ $(document).ready( function() {
   });
 });
 
-function add_group(checked, id, group_id) {
-  var val = $('#group-'+group_id+'-'+id).val();
+function update_group(checked, id, group_id) {
   $.ajax({
-    url: "/resources/"+id,
+    url: "/resources/"+id+'/update_group',
     type: "POST",
-    data: {'group' : val, 'checked' : checked},
+    data: {'group_id' : group_id, 'checked' : checked},
     dataType: "html"
   });
 }
