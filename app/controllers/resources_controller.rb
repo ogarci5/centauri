@@ -28,7 +28,7 @@ class ResourcesController < ApplicationController
     if request.xhr?
       render partial: 'directory', layout: false
     else
-      render 'new'
+      render :new
     end
   end
 
@@ -39,17 +39,43 @@ class ResourcesController < ApplicationController
     if resource_params[:url].present?
       @resource = Resource.new(resource_params)
       @resource.file = URI.parse(resource_params[:url])
+
     elsif resource_params[:local].present?
-      @resource = Resource.new
-      File.open(resource_params[:local]) do |f|
-        @resource.file = f
+
+      if params[:directory] == 'true' || params[:directory] == true
+        @group = Group.where(group_params.slice(:name)).first || Group.new(group_params)
+
+        if @group.save
+          Dir.entries(resource_params[:local]).each do |entry|
+            dir = resource_params[:local]+entry
+            @resource = @group.resources.build(resource_params)
+
+            File.open(dir) do |f|
+              @resource.file = f
+            end if File.file?(dir)
+
+            @resource.save
+          end
+
+          redirect_to resources_path
+        else
+          render :new, flash: {error: 'The group could not be saved.'}
+        end
+
+        return
+      else
+        @resource = Resource.new
+
+        File.open(resource_params[:local]) do |f|
+          @resource.file = f
+        end
       end
     else
       @resource = Resource.new(resource_params)
     end
 
     if @resource.save
-      redirect_to action: :index
+      redirect_to @resource
     else
       render :new
     end
@@ -72,6 +98,10 @@ class ResourcesController < ApplicationController
 
     def resource_params
       params.require(:resource).permit(:file, :name, :url, :local)
+    end
+
+    def group_params
+      params.require(:group).permit(:name, :main)
     end
 
     def set_list
