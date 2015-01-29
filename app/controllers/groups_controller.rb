@@ -36,6 +36,16 @@ class GroupsController < ApplicationController
     respond_with(@group)
   end
 
+  def toggle
+    if cookies[:toggle_groups].nil?
+      cookies[:toggle_groups] = true
+    else
+      cookies[:toggle_groups] = cookies[:toggle_groups] == 'true' ? false : true
+    end
+
+    render json: nil, status: :ok
+  end
+
   private
     def set_group
       @group = Group.find(params[:id])

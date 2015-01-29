@@ -29,7 +29,7 @@
   </div>
 </div>
 <div>
-  <input class="btn btn-default" type="button" id="toggle-form" value="Toggle Form">
+  <%= toggle_groups_button(cookies[:toggle_groups] == 'true' ? true : false) %>
   <a class="btn btn-default" href="/resources/new">New Resource</a>
 </div>
 <div class="row col-md-12">
@@ -46,7 +46,7 @@
       <%else%>
         <%= image_tag resource.location, class: 'resource-content' %>
       <%end%>
-      <form id="form-<%=resource.id%>" class="resource-form" style="<%=cookies[:toggle_form] ? '': 'display: none;'%>">
+      <form id="form-<%=resource.id%>" class="resource-group-form">
         <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
         <%@main_groups.each do |group|%>
           <label class="checkbox-inline">
@@ -60,7 +60,7 @@
   <%= will_paginate @resources, renderer: BootstrapPagination::Rails %>
 </div>
 <script>
-  function checkNav() {
+  function check_nav() {
     $('.nav li').removeClass('active');
     <%params.each do |key, value|%>
       <%if key == 'groups'%>
@@ -75,12 +75,15 @@
     <%end%>
   }
 
-  $('#toggle-form').click(function() {
-    $('.resource-form').toggle();
-    var val = $('#group-'+group_id+'-'+id).val();
+  function set_group_forms(toggle) {
+    toggle ? $('.resource-group-form').show() : $('.resource-group-form').hide();
+  }
+
+  $('#toggle-groups').click(function() {
+    $('.resource-group-form').toggle();
     $.ajax({
-      url: "<%=toggle_form_path%>",
-      type: "POST",
+      url: "<%=toggle_groups_path%>",
+      type: "GET",
       dataType: "html"
     });
   });
@@ -117,5 +120,8 @@
     window.location.search = '?'+query.join('&');
   });
 
-  $(checkNav());
+  $(function() {
+    check_nav();
+    set_group_forms(<%= cookies[:toggle_groups] == 'true' ? true : false %>);
+  });
 </script>

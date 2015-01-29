@@ -36,7 +36,7 @@ $tertiary-color: #B33500;
   margin-right:auto;
   max-width:1280px;
 }
-.resource-form {
+.resource-group-form {
   display: block;
   margin-left:auto;
   margin-right:auto;
@@ -119,4 +119,14 @@ $tertiary-color: #B33500;
   background: white;
   cursor: inherit;
   display: block;
+}
+
+#toggle-groups.btn:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: #ccc;
+  &.active {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+  }
 }

@@ -95,15 +95,6 @@ class ResourcesController < ApplicationController
     respond_with(@resource)
   end
 
-  def toggle_form
-    if cookies[:toggle_form].nil?
-      cookies[:toggle_form] = true
-    else
-      cookies[:toggle_form] = !cookies[:toggle_form]
-    end
-    render :none
-  end
-
   private
     def set_resource
       @resource = Resource.find(params[:id])
