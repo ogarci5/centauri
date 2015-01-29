@@ -32,42 +32,43 @@
   <input class="btn btn-default" type="button" id="toggle-form" value="Toggle Form">
   <a class="btn btn-default" href="/resources/new">New Resource</a>
 </div>
-<%@resources.each do |resource|%>
-  <%if resource.type == 'video'%>
-    <video src="<%=resource.location%>" controls>
-    </video>
-  <%elsif resource.type == 'swf'%>
-    <embed src="<%=resource.location%>">
-  <%else%>
-    <%= image_tag resource.location %>
+<div class="row col-md-12">
+  <%@resources.each do |resource|%>
+    <div class="col-md-12">
+      <%if resource.type == 'video'%>
+        <video class="resource-content" src="<%=resource.location%>" controls>
+        </video>
+      <%elsif resource.type == 'swf'%>
+        <embed class="resource-content" src="<%=resource.location%>">
+      <%else%>
+        <%= image_tag resource.location, class: 'resource-content' %>
+      <%end%>
+      <form id="form-<%=resource.id%>" class="resource-form" style="display: none;">
+        <%=link_to '&times;'.html_safe, resources_path(resource), method: :delete, class: 'resource-close close'%>
+        <%@main_groups.each do |group|%>
+          <label class="checkbox-inline">
+            <input id="group-<%=group.id%>-<%=resource.id%>" onclick="checkClick(this.checked, <%=resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
+          </label>
+        <%end%>
+      </form>
+    </div>
   <%end%>
-  <form id="form-<%=resource.id%>" class="resource-form">
-    <%=link_to '&times;'.html_safe, resources_path(resource), method: :delete, class: 'resource-close close'%>
-    <%@main_groups.each do |group|%>
-      <label class="checkbox-inline">
-        <input id="group-<%=group.id%>-<%=resource.id%>" onclick="checkClick(this.checked, <%=resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
-      </label>
-    <%end%>
-  </form>
-<%end%>
-<a href="#brand">Back to Top</a>
+  <a class="btn btn-default" href="#brand">Back to Top</a>
+  <%= will_paginate @resources, renderer: BootstrapPagination::Rails %>
+</div>
 <script>
   function checkNav() {
     $('.nav li').removeClass('active');
     <%params.each do |key, value|%>
-    <%if key == "groups"%>
-    <%value.each do |group, val|%>
-    if(<%=val%>) {
-      $('#<%=group%>').addClass('active');
-    }
-    <%end%>
-    <%elsif key == "types"%>
-    <%value.each do |type, val|%>
-    if(<%=val%>) {
-      $('#<%=type%>').addClass('active');
-    }
-    <%end%>
-    <%end%>
+      <%if key == "groups"%>
+        <%value.each do |group, val|%>
+          if(<%=val%>) $('#<%=group%>').addClass('active');
+      <%end%>
+      <%elsif key == "types"%>
+        <%value.each do |type, val|%>
+          if(<%=val%>) $('#<%=type%>').addClass('active');
+        <%end%>
+      <%end%>
     <%end%>
   }
 

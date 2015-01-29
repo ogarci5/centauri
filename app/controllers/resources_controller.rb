@@ -7,7 +7,12 @@ class ResourcesController < ApplicationController
 
   def index
     @resources = Resource.all
-    @resources.shuffle if params[:types] && params[:types][:shuffle] == "true"
+    if params[:types] && params[:types][:shuffle] == 'true'
+      @resources = @resources.paginate(page: params[:page], per_page: 10).shuffle
+    else
+      @resources = @resources.paginate(page: params[:page], per_page: 10)
+    end
+    @resources = @resources.where
     #@cenfiles = @cenfiles.partition {|c| !c.groups.empty?}.flatten if params[:types] && params[:types][:group_filter] == "true"
     @groups = Group.all
     @main_groups = Group.where(main: true)
