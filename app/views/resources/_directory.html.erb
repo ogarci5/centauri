@@ -1,0 +1,38 @@
+<tbody>
+  <%@list.each_slice(5).each do |list|%>
+    <tr>
+      <%list.each do |item|%>
+        <td class="cen-item cen-<%=item[:type]%>" colspan="<%=item == @list.last ? 5 : nil%>"><%=item[:name]%></td>
+      <%end%>
+    </tr>
+  <%end%>
+</tbody>
+<script>
+$('td.cen-directory').click(function() {
+  var text = $(this).text(),
+      full_dir = '<%=@new_dir%>/'+text;
+  $('#directories').load('/resources/new?dir='+full_dir);
+});
+$('td.cen-file').click(function() {
+  $('.cen-file').removeClass('highlight');
+  $(this).addClass('highlight');
+  var text = $(this).text(),
+      full_dir = '<%=@new_dir%>'+text;
+  $('#resource_address').val(full_dir);
+  $('#resource_local').val(full_dir);
+});
+$('#submit_address').click(function() {
+  var text = $('#resource_address').val();
+  if(text[0] == '/'){
+    var full_dir = text;
+  } else {
+    var full_dir = '<%=@new_dir%>'+text;
+  }
+  $('#resource_address').val('');
+  $('#submit_address').unbind('click');
+  $('#directories').load('/resources/new?dir='+full_dir);
+});
+$(function() {
+  $('#current_directory').text('<%=@new_dir%>');
+});
+</script>

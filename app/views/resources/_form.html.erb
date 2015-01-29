@@ -1,21 +1,129 @@
-<%= form_for(@resource, :html => { :multipart => true }) do |f| %>
-  <% if @resource.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@resource.errors.count, "error") %> prohibited this resource from being saved:</h2>
-
-      <ul>
-      <% @resource.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+<div id="groupModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p>Enter group information</p>
+        <div id="new_group">
+          <div class="form-group">
+            <label for="group_name">Group Name</label>
+            <input name="group[name]" type="text" class="form-control" id="group_name" placeholder="Group Name">
+          </div>
+          <div class="checkbox">
+            <label>
+              <input name="group[main]" type="hidden" value="false" />
+              <input type="checkbox" id="group_main" name="group[main]" value="true" />Main Group?
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a id="new_directory" class="btn btn-primary">Submit</a>
+      </div>
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= f.file_field :file %>
   </div>
-
-  <div class="actions">
-    <%= f.submit %>
+</div>
+<%= bootstrap_form_for(@resource, html: { multipart: true }) do |f| %>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-centauri">
+        <div class="panel-heading">
+          Upload from computer or URL
+        </div>
+        <div class="panel-body">
+          <%= f.alert_message 'Please fix the errors below.' %>
+          <div class="form-group input-group">
+            <input type="text" class="form-control" placeholder="Select a file" readonly="" id="resource_file_text">
+            <span class="input-group-btn">
+              <span class="btn btn-default btn-file">
+              Browse <input type="file" name="resource[file]" id="resource_file">
+              </span>
+            </span>
+          </div>
+          <%=f.text_field :url, hide_label: :true, placeholder: 'Or paste in a URL' %>
+          <%= f.submit 'Create', class: 'btn btn-primary pull-right' %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-centauri">
+        <div class="panel-heading">
+          Find the file locally
+        </div>
+        <div class="panel-body">
+          <div class="input-group form-group">
+            <span class="input-group-addon">cd</span>
+            <input name="address" type="text" class="form-control" id="resource_address" placeholder="/your/directory/here" autocomplete="off">
+            <span class="input-group-btn">
+              <a class="btn btn-default" id="submit_address">Submit</a>
+            </span>
+          </div>
+          Current directory: <strong id="current_directory"><%=Dir.pwd%></strong>
+        </div>
+        <div id="resource-local">
+          <table id="directories" class="table table-condensed table-bordered">
+            <tbody>
+            <%@list.each_slice(5).each do |list|%>
+              <tr>
+                <%list.each do |item|%>
+                  <td class="cen-item cen-<%=item[:type]%>" colspan="<%=item == @list.last ? 5 : nil%>"><%=item[:name]%></td>
+                <%end%>
+              </tr>
+            <%end%>
+            </tbody>
+          </table>
+        </div>
+        <div class="panel-body actions">
+          <div class="form-group">
+            <%=f.submit 'Create', class: 'btn btn-primary pull-right', id: 'create_resource'%>
+            <input name="resource[local]" type="hidden" class="form-control" id="resource_local">
+            <div class="checkbox-inline pull-right">
+              <input name="directory" type="hidden" value="false" />
+              <input type="checkbox" id="directory" name="directory" value="true"/>Full Directory?
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-<% end %>
+<%end%>
+<script>
+  $('td.cen-directory').click(function() {
+    var text = $(this).text(),
+        full_dir = '<%=Dir.pwd%>/'+text;
+    $('#directories').load('/resources/new?dir='+full_dir);
+  });
+  $('td.cen-file').click(function() {
+    $('.cen-file').removeClass('highlight');
+    $(this).addClass('highlight');
+    var text = $(this).text(),
+        full_dir = '<%=Dir.pwd%>/'+text;
+    $('#resource_address').val(full_dir);
+    $('#resource_local').val(full_dir);
+  });
+  $('#submit_address').click(function() {
+    var full_dir = $('#resource_address').val();
+    $('#resource_address').val('');
+    $('#submit_address').unbind('click');
+    $('#directories').load('/resources/new?dir='+full_dir);
+  });
+  $('#create_resource').click(function(e) {
+    e.preventDefault();
+    if($('#directory').prop('checked')) {
+      $('#resource_local').val($('#current_directory').text());
+      $('#groupModal').modal('show');
+    } else {
+      $('#new_resource').submit();
+    }
+  });
+  $('#new_directory').click(function() {
+    $('#new_resource').append($('#new_group').css('display', 'none')).submit();
+  });
+  $('#resource_address').keypress(function(e) {
+    // Enter pressed?
+    if(e.which == 10 || e.which == 13) {
+      e.preventDefault();
+      $('#submit_address').click();
+    }
+  });
+</script>

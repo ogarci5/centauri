@@ -1,17 +1,7 @@
-<%= form_for(@group) do |f| %>
-  <% if @group.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@group.errors.count, "error") %> prohibited this group from being saved:</h2>
-
-      <ul>
-      <% @group.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+<%= bootstrap_form_for(@group) do |f| %>
+  <%=f.alert_message 'Please fix the errors below.' %>
+  <%=f.text_field :name %>
+  <%=f.check_box :main %>
+  <%= link_to 'Back', groups_path, class: 'btn btn-default' %>
+  <%=f.primary %>
 <% end %>

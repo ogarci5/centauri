@@ -10,8 +10,127 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
+ *= require rails_bootstrap_forms
  *= require_self
  */
 
+$brand-primary: #E17A34;
+$primary-color: #E17A34;
+$secondary-color: #D55700;
+$tertiary-color: #B33500;
+
 @import "bootstrap-sprockets";
 @import "bootstrap";
+
+#brand {
+  text-align:center;
+  a {
+    text-decoration:none;
+    color:#333;
+  }
+}
+
+.cen-image {
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+  max-width:1280px;
+}
+.resource-group-form {
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  .row{
+    display: block;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+  }
+}
+.resource-close {
+  float:none;
+  font-size:14px;
+}
+.cen-item:hover {
+  background-color: $primary-color;
+  color: #fff;
+  cursor:pointer;
+}
+.highlight {
+  background-color: $secondary-color;
+  color: #fff;
+}
+
+#resource-local {
+  overflow-x: scroll;
+  #directories {
+    width: 100%;
+    max-width: 100%;
+    tr:last-child td {
+      border-bottom: 1px solid #ddd;
+    }
+  }
+}
+
+.resource-content {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.panel-centauri {
+  border-color: $secondary-color;
+  > .panel-heading {
+    color: #fff;
+    background-color: $secondary-color;
+    border-color: $secondary-color;
+  }
+}
+
+#new_resource {
+  .actions {
+    line-height: 34px;
+    input[type="checkbox"] {
+      margin-top: 11px;
+    }
+    .checkbox-inline {
+      margin-right: 10px;
+    }
+  }
+}
+
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  outline: none;
+  background: white;
+  cursor: inherit;
+  display: block;
+}
+
+#toggle-groups.btn:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: #ccc;
+  &.active {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+  }
+}
+
+.cen-nav-header {
+  margin-top: 0;
+}

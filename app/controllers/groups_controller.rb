@@ -23,17 +23,27 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(group_params)
     @group.save
-    respond_with(@group)
+    redirect_to groups_path
   end
 
   def update
     @group.update(group_params)
-    respond_with(@group)
+    redirect_to groups_path
   end
 
   def destroy
     @group.destroy
     respond_with(@group)
+  end
+
+  def toggle
+    if cookies[:toggle_groups].nil?
+      cookies[:toggle_groups] = true
+    else
+      cookies[:toggle_groups] = cookies[:toggle_groups] == 'true' ? false : true
+    end
+
+    render json: nil, status: :ok
   end
 
   private
@@ -42,6 +52,6 @@ class GroupsController < ApplicationController
     end
 
     def group_params
-      params[:group]
+      params.require(:group).permit(:name, :main)
     end
 end
