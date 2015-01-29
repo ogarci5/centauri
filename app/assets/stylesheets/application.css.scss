@@ -17,6 +17,7 @@
 $brand-primary: #E17A34;
 $primary-color: #E17A34;
 $secondary-color: #D55700;
+$tertiary-color: #B33500;
 
 @import "bootstrap-sprockets";
 @import "bootstrap";
@@ -52,14 +53,12 @@ $secondary-color: #D55700;
   font-size:14px;
 }
 .cen-item:hover {
-  color:#d55700;
+  background-color: $primary-color;
+  color: #fff;
   cursor:pointer;
 }
 .highlight {
-  background-color: #b33500;
-  color: #fff;
-}
-.highlight:hover {
+  background-color: $secondary-color;
   color: #fff;
 }
 

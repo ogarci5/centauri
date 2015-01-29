@@ -62,13 +62,13 @@
         </div>
         <table id="directories" class="table table-condensed table-bordered">
           <tbody>
-          <%@list.each_slice(5).each do |list|%>
-            <tr>
-              <%list.each do |item|%>
-                <td colspan="<%=item == @list.last ? 5 : nil%>"><span class="cen-item cen-<%=item[:type]%>"><%=item[:name]%></span></td>
-              <%end%>
-            </tr>
-          <%end%>
+            <%@list.each_slice(5).each do |list|%>
+              <tr>
+                <%list.each do |item|%>
+                  <td class="cen-item cen-<%=item[:type]%>" colspan="<%=item == @list.last ? 5 : nil%>"><%=item[:name]%></td>
+                <%end%>
+              </tr>
+            <%end%>
           </tbody>
         </table>
         <div class="panel-body actions">
@@ -86,12 +86,12 @@
   </div>
 <%end%>
 <script>
-  $('span.cen-directory').click(function() {
+  $('td.cen-directory').click(function() {
     var text = $(this).text(),
         full_dir = '<%=Dir.pwd%>/'+text;
     $('#directories').load('/resources/new?dir='+full_dir);
   });
-  $('span.cen-file').click(function() {
+  $('td.cen-file').click(function() {
     $('.cen-file').removeClass('highlight');
     $(this).addClass('highlight');
     var text = $(this).text(),

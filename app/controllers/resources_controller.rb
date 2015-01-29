@@ -1,5 +1,6 @@
 class ResourcesController < ApplicationController
   before_action :set_resource, only: [:show, :edit, :update, :destroy]
+  before_action :set_list, only: [:new, :create]
   skip_before_filter :verify_authenticity_token, :only=> :create
   skip_before_filter :authenticate_user!, :only=> :create
 
@@ -24,27 +25,6 @@ class ResourcesController < ApplicationController
 
   def new
     @resource = Resource.new
-    cdir = params[:dir].presence || Dir.pwd
-    dirs = []
-    files = []
-    
-    begin
-      FileUtils.cd(cdir) do
-        @new_dir = FileUtils.pwd == '/' ? FileUtils.pwd : FileUtils.pwd+'/'
-      end
-    rescue Errno::ENOENT
-      FileUtils.cd(Dir.pwd) do
-        @new_dir = FileUtils.pwd == '/' ? FileUtils.pwd : FileUtils.pwd+'/'
-      end
-    end
-
-    Dir.entries(@new_dir).delete_if{|d| d == '.'}.each do |dir|
-      File.directory?(@new_dir+dir) ? dirs << dir : files << dir
-    end
-
-    dirs.sort!.collect! {|d| {name: d+'/', type: 'directory'}}
-    files.sort!.collect! {|f| {name: f, type: 'file'}}
-    @list = dirs + files
     if request.xhr?
       render partial: 'directory', layout: false
     else
@@ -56,25 +36,11 @@ class ResourcesController < ApplicationController
   end
 
   def create
-    cdir = Dir.pwd
-    cdir = params[:dir] if params[:dir]
-    dirs = []
-    files = []
-    FileUtils.cd(cdir) do
-      @new_dir = FileUtils.pwd+'/'
-    end
-
-    Dir.entries(@new_dir).delete_if {|d| d == '.'}.each do |dir|
-      File.directory?(@new_dir+dir) ? dirs << dir : files << dir
-    end
-
-    dirs.sort!.collect! {|d| {name: d+'/', type: 'directory'}}
-    files.sort!.collect! {|f| {name: f, type: 'file'}}
-    @list = dirs + files
     if resource_params[:url].present?
       @resource = Resource.new
       @resource.file = URI.parse(resource_params[:url])
     elsif resource_params[:local].present?
+      puts 'herehherhehre'
       @resource = Resource.new
       File.open(resource_params[:local]) do |f|
         @resource.file = f
@@ -107,5 +73,29 @@ class ResourcesController < ApplicationController
 
     def resource_params
       params.require(:resource).permit(:file, :name, :url, :location2)
+    end
+
+    def set_list
+      cdir = params[:dir].presence || Dir.pwd
+      dirs = []
+      files = []
+
+      begin
+        FileUtils.cd(cdir) do
+          @new_dir = FileUtils.pwd == '/' ? FileUtils.pwd : FileUtils.pwd+'/'
+        end
+      rescue Errno::ENOENT
+        FileUtils.cd(Dir.pwd) do
+          @new_dir = FileUtils.pwd == '/' ? FileUtils.pwd : FileUtils.pwd+'/'
+        end
+      end
+
+      Dir.entries(@new_dir).delete_if{|d| d == '.'}.each do |dir|
+        File.directory?(@new_dir+dir) ? dirs << dir : files << dir
+      end
+
+      dirs.sort!.collect! {|d| {name: d+'/', type: 'directory'}}
+      files.sort!.collect! {|f| {name: f, type: 'file'}}
+      @list = dirs + files
     end
 end
