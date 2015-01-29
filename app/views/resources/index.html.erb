@@ -1,20 +1,35 @@
 <p id="notice"><%= notice %></p>
 <div class="panel panel-default">
   <div class="panel-body">
-    <h5>Groups</h5>
-    <ul id="group_nav" class="nav nav-pills">
-      <%@groups.each do |group|%>
-        <li id="<%=group.name.parameterize%>"><a><%=group.name.titleize%></a></li>
-      <%end%>
-    </ul>
-    <h5>Types</h5>
-    <ul id="type_nav" class="nav nav-pills">
-      <li id="image"><a>Images</a></li>
-      <li id="gif"><a>Gifs</a></li>
-      <li id="shuffle"><a>Shuffle</a></li>
-      <li id="group_filter"><a>Group Filter</a></li>
-    </ul>
-  </div></div>
+    <div class="row">
+      <div class="col-md-12">
+        <h4 class="cen-nav-header">Groups</h4>
+        <ul id="group_nav" class="nav nav-pills">
+          <%@groups.each do |group|%>
+            <li id="<%=group.name.parameterize%>"><a><%=group.name.titleize%></a></li>
+          <%end%>
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-2">
+        <h4>Types</h4>
+        <ul id="type_nav" class="nav nav-pills">
+          <li id="image"><a>Images</a></li>
+          <li id="gif"><a>Gifs</a></li>
+          <li id="video"><a>Video</a></li>
+        </ul>
+      </div>
+      <div class="col-md-10">
+        <h4>Controls</h4>
+        <ul id="control_nav" class="nav nav-pills">
+          <li id="shuffle"><a>Shuffle</a></li>
+          <li id="group_filter"><a>Group Filter</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="destroyModal" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -63,15 +78,9 @@
 <script>
   function check_nav() {
     $('.nav li').removeClass('active');
-    <%params.each do |key, value|%>
-      <%if key == 'groups'%>
-        <%value.each do |group, val|%>
-          if(<%=val%>) $('#<%=group%>').addClass('active');
-        <%end%>
-      <%elsif key == 'types'%>
-        <%value.each do |type, val|%>
-          if(<%=val%>) $('#<%=type%>').addClass('active');
-        <%end%>
+    <%params.select{|k,_| %w(groups types controls).include?(k)}.each do |_, value|%>
+      <%value.each do |val|%>
+        $('#<%=val%>').addClass('active');
       <%end%>
     <%end%>
   }
@@ -98,25 +107,28 @@
   $(".nav-pills li").click(function() {
     var id  = $(this).attr('id');
 
-    if((id == 'image' || id == 'gif') && !$(this).hasClass('active')) {
-      $('#image').removeClass('active');
-      $('#gif').removeClass('active');
+    if((id == 'image' || id == 'gif' || id == 'video') && !$(this).hasClass('active')) {
+      $('#type_nav li').removeClass('active');
     }
     $(this).toggleClass('active');
 
     var group_filter = $("#group_nav.nav-pills li.active"),
         type_filter = $("#type_nav.nav-pills li.active"),
+        control_filter = $("#control_nav.nav-pills li.active"),
         groups = [],
-        types = [];
+        types = [],
+        controls = [];
 
     for(var i=0; i < group_filter.length; i++ ) {
-      groups[i] = 'groups['+group_filter[i].id+']=true';
+      groups[i] = 'groups[]='+group_filter[i].id;
     }
-
     for(i=0; i < type_filter.length; i++ ) {
-      types[i] = 'types['+type_filter[i].id+']=true';
+      types[i] = 'types[]='+type_filter[i].id;
     }
-    var query = groups.concat(types);
+    for(i=0; i < control_filter.length; i++ ) {
+      controls[i] = 'controls[]='+control_filter[i].id;
+    }
+    var query = groups.concat(types).concat(controls);
     window.location.search = '?'+query.join('&');
   });
 
