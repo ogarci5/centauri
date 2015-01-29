@@ -50,7 +50,8 @@
         <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
         <%@main_groups.each do |group|%>
           <label class="checkbox-inline">
-            <input id="group-<%=group.id%>-<%=resource.id%>" onclick="add_group(this.checked, <%=resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
+            <input id="group-<%=group.id%>-<%=resource.id%>" onclick="add_group(this.checked, <%=resource.id%>, <%=group.id%>)"
+                   type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name.titleize%>
           </label>
         <%end%>
       </form>

@@ -10,14 +10,18 @@ class ResourcesController < ApplicationController
     @resources = Resource.all.includes(:groups)
     if params[:types].try(:[], :shuffle) == 'true'
       cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i
-      @resources = @resources.paginate(page: params[:page], per_page: 10).order("RAND(#{cookies[:seed]})")
+      @resources = @resources.order("RAND(#{cookies[:seed]})")
     else
       cookies.delete(:seed)
-      @resources = @resources.paginate(page: params[:page], per_page: 10)
     end
+    @resources = @resources.for_type(:image) if params[:types].try(:[], :image) == 'true'
+    @resources = @resources.for_type(:image) if params[:types].try(:[], :gif) == 'true'
+    @resources = @resources.where(groups: {id: nil}) if params[:types].try(:[], :group_filter) == 'true'
+    @resources = @resources.paginate(page: params[:page], per_page: 10)
+    #paginate(page: params[:page], per_page: 10)
     #@cenfiles = @cenfiles.partition {|c| !c.groups.empty?}.flatten if params[:types] && params[:types][:group_filter] == "true"
     @groups = Group.all
-    @main_groups = Group.where(main: true)
+    @main_groups = @groups.where(main: true)
   end
 
   def show
