@@ -5,8 +5,7 @@ class Resource < ActiveRecord::Base
 
   has_attached_file :file
   do_not_validate_attachment_file_type :file
-  validates_uniqueness_of :file_file_name
-  validates_attachment_presence :file
+  validates :file_file_name, presence: true, uniqueness: true
 
   def self.all_with_params(params)
     resources = self.all
@@ -19,7 +18,8 @@ class Resource < ActiveRecord::Base
   end
 
   def type
-    self.file_content_type.split('/').first
+    types = self.file_content_type.split('/')
+    self.file_content_type == 'application/octet-stream' ? types.last : types.first
   end
 
   def location

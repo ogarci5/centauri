@@ -4,7 +4,7 @@
     <h5>Groups</h5>
     <ul id="group_nav" class="nav nav-pills">
       <%@groups.each do |group|%>
-        <li id="<%=group.name%>"><a><%=group.name.capitalize%></a></li>
+        <li id="<%=group.name.parameterize%>"><a><%=group.name.titleize%></a></li>
       <%end%>
     </ul>
     <h5>Types</h5>
@@ -36,14 +36,17 @@
   <%@resources.each do |resource|%>
     <div class="col-md-12">
       <%if resource.type == 'video'%>
-        <video class="resource-content" src="<%=resource.location%>" controls>
+        <video class="resource-content" src="<%=resource.location%>" autoplay="" loop="" controls="">
+        </video>
+      <%elsif resource.type == 'octet-stream'%>
+        <video class="resource-content" src="<%=resource.location%>" autoplay="" loop="" controls="">
         </video>
       <%elsif resource.type == 'swf'%>
         <embed class="resource-content" src="<%=resource.location%>">
       <%else%>
         <%= image_tag resource.location, class: 'resource-content' %>
       <%end%>
-      <form id="form-<%=resource.id%>" class="resource-form" style="display: none;">
+      <form id="form-<%=resource.id%>" class="resource-form" style="<%=cookies[:toggle_form] ? '': 'display: none;'%>">
         <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
         <%@main_groups.each do |group|%>
           <label class="checkbox-inline">
@@ -60,11 +63,11 @@
   function checkNav() {
     $('.nav li').removeClass('active');
     <%params.each do |key, value|%>
-      <%if key == "groups"%>
+      <%if key == 'groups'%>
         <%value.each do |group, val|%>
           if(<%=val%>) $('#<%=group%>').addClass('active');
-      <%end%>
-      <%elsif key == "types"%>
+        <%end%>
+      <%elsif key == 'types'%>
         <%value.each do |type, val|%>
           if(<%=val%>) $('#<%=type%>').addClass('active');
         <%end%>
@@ -74,6 +77,12 @@
 
   $('#toggle-form').click(function() {
     $('.resource-form').toggle();
+    var val = $('#group-'+group_id+'-'+id).val();
+    $.ajax({
+      url: "<%=toggle_form_path%>",
+      type: "POST",
+      dataType: "html"
+    });
   });
 
   $('.resource-close').click(function() {
@@ -82,25 +91,29 @@
     $('#destroyModal').modal('show');
   });
 
-  $(".nav-pills li a").click(function() {
-    id  = $(this).parent().attr('id');
-    console.log(!$(this).parent().hasClass('active'));
-    if(id == 'image' || id == 'gif' && !$(this).parent().hasClass('active')) {
+  $(".nav-pills li").click(function() {
+    var id  = $(this).attr('id');
+
+    console.log(id)
+    if((id == 'image' || id == 'gif') && !$(this).hasClass('active')) {
       $('#image').removeClass('active');
       $('#gif').removeClass('active');
     }
-    $(this).parent().toggleClass('active');
-    group_filter = $("#group_nav.nav-pills li.active");
-    type_filter = $("#type_nav.nav-pills li.active");
-    groups = [];
-    types = [];
-    for(i=0; i < group_filter.length; i++ ) {
+    $(this).toggleClass('active');
+
+    var group_filter = $("#group_nav.nav-pills li.active"),
+        type_filter = $("#type_nav.nav-pills li.active"),
+        groups = [],
+        types = [];
+
+    for(var i=0; i < group_filter.length; i++ ) {
       groups[i] = 'groups['+group_filter[i].id+']=true';
     }
+
     for(i=0; i < type_filter.length; i++ ) {
       types[i] = 'types['+type_filter[i].id+']=true';
     }
-    query = groups.concat(types);
+    var query = groups.concat(types);
     window.location.search = '?'+query.join('&');
   });
 

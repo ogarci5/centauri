@@ -1,8 +1,11 @@
 <%if @resource.type == 'video'%>
-  <video class="resource-content" src="<%=@resource.location%>" controls>
+  <video class="resource-content" src="<%=@resource.location%>" autoplay="" loop="" controls="">
+  </video>
+<%elsif @resource.type == 'octet-stream'%>
+  <video class="resource-content" src="<%=@resource.location%>" autoplay="" loop="" controls="">
   </video>
 <%elsif @resource.type == 'swf'%>
-  <embed class="resource-content" src="<%=@resource.location%>">
+  <embed class="resource-content" src="<%=r@esource.location%>">
 <%else%>
   <%= image_tag @resource.location, class: 'resource-content' %>
 <%end%>

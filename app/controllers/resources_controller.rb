@@ -8,12 +8,13 @@ class ResourcesController < ApplicationController
 
   def index
     @resources = Resource.all
-    if params[:types] && params[:types][:shuffle] == 'true'
-      @resources = @resources.paginate(page: params[:page], per_page: 10).shuffle
+    if params[:types].try(:[], :shuffle) == 'true'
+      cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i
+      @resources = @resources.paginate(page: params[:page], per_page: 10).order("RAND(#{cookies[:seed]})")
     else
+      cookies.delete(:seed)
       @resources = @resources.paginate(page: params[:page], per_page: 10)
     end
-    @resources = @resources
     #@cenfiles = @cenfiles.partition {|c| !c.groups.empty?}.flatten if params[:types] && params[:types][:group_filter] == "true"
     @groups = Group.all
     @main_groups = Group.where(main: true)
@@ -55,7 +56,9 @@ class ResourcesController < ApplicationController
               @resource.file = f
             end if File.file?(dir)
 
-            @resource.save
+            if @resource.save
+              @group.resources << @resource
+            end
           end
 
           redirect_to resources_path
@@ -90,6 +93,15 @@ class ResourcesController < ApplicationController
   def destroy
     @resource.destroy
     respond_with(@resource)
+  end
+
+  def toggle_form
+    if cookies[:toggle_form].nil?
+      cookies[:toggle_form] = true
+    else
+      cookies[:toggle_form] = !cookies[:toggle_form]
+    end
+    render :none
   end
 
   private
