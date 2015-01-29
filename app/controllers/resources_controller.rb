@@ -37,10 +37,9 @@ class ResourcesController < ApplicationController
 
   def create
     if resource_params[:url].present?
-      @resource = Resource.new
+      @resource = Resource.new(resource_params)
       @resource.file = URI.parse(resource_params[:url])
     elsif resource_params[:local].present?
-      puts 'herehherhehre'
       @resource = Resource.new
       File.open(resource_params[:local]) do |f|
         @resource.file = f
@@ -72,7 +71,7 @@ class ResourcesController < ApplicationController
     end
 
     def resource_params
-      params.require(:resource).permit(:file, :name, :url, :location2)
+      params.require(:resource).permit(:file, :name, :url, :local)
     end
 
     def set_list

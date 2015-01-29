@@ -1,7 +1,7 @@
 class Resource < ActiveRecord::Base
   has_and_belongs_to_many :groups
 
-  attr_accessor :url, :local
+  attr_accessor :local
 
   has_attached_file :file
   do_not_validate_attachment_file_type :file

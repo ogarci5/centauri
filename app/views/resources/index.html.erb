@@ -19,11 +19,11 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body">
-        <p>Are you sure you want to destroy this resource?</p>
+        <p>Are you sure you want to delete this resource?</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <a href="" class="btn btn-primary">Save changes</a>
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        <%=link_to 'Yes', '', class: 'btn btn-primary', method: :delete%>
       </div>
     </div>
   </div>
@@ -44,7 +44,7 @@
         <%= image_tag resource.location, class: 'resource-content' %>
       <%end%>
       <form id="form-<%=resource.id%>" class="resource-form" style="display: none;">
-        <%=link_to '&times;'.html_safe, resources_path(resource), method: :delete, class: 'resource-close close'%>
+        <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
         <%@main_groups.each do |group|%>
           <label class="checkbox-inline">
             <input id="group-<%=group.id%>-<%=resource.id%>" onclick="checkClick(this.checked, <%=resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
@@ -77,13 +77,13 @@
   });
 
   $('.resource-close').click(function() {
-    href = $(this).attr('data-href');
+    var href = $(this).attr('data-href');
     $('#destroyModal a').attr('href', href);
     $('#destroyModal').modal('show');
   });
 
   function checkClick(checked, id, group_id) {
-    val = $('#group-'+group_id+'-'+id).val();
+    var val = $('#group-'+group_id+'-'+id).val();
     $.ajax({
       url: "/resources/"+id,
       type: "POST",
