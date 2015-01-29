@@ -11,7 +11,7 @@ $(document).ready( function() {
   });
 });
 
-function checkClick(checked, id, group_id) {
+function add_group(checked, id, group_id) {
   var val = $('#group-'+group_id+'-'+id).val();
   $.ajax({
     url: "/resources/"+id,

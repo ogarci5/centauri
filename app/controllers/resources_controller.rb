@@ -7,7 +7,7 @@ class ResourcesController < ApplicationController
   respond_to :html, :json
 
   def index
-    @resources = Resource.all
+    @resources = Resource.all.includes(:groups)
     if params[:types].try(:[], :shuffle) == 'true'
       cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i
       @resources = @resources.paginate(page: params[:page], per_page: 10).order("RAND(#{cookies[:seed]})")

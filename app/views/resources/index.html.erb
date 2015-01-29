@@ -50,7 +50,7 @@
         <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
         <%@main_groups.each do |group|%>
           <label class="checkbox-inline">
-            <input id="group-<%=group.id%>-<%=resource.id%>" onclick="checkClick(this.checked, <%=resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
+            <input id="group-<%=group.id%>-<%=resource.id%>" onclick="add_group(this.checked, <%=resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
           </label>
         <%end%>
       </form>
@@ -97,7 +97,6 @@
   $(".nav-pills li").click(function() {
     var id  = $(this).attr('id');
 
-    console.log(id)
     if((id == 'image' || id == 'gif') && !$(this).hasClass('active')) {
       $('#image').removeClass('active');
       $('#gif').removeClass('active');
