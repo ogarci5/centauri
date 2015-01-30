@@ -6,7 +6,7 @@
         <h4 class="cen-nav-header">Groups</h4>
         <ul id="group_nav" class="nav nav-pills">
           <%@groups.each do |group|%>
-            <li id="group-<%="#{group.id}"%>"><a><%=group.name.titleize%></a></li>
+            <li id="groups_<%="#{group.id}"%>"><a><%=group.name.titleize%></a></li>
           <%end%>
         </ul>
       </div>
@@ -15,16 +15,25 @@
       <div class="col-md-2">
         <h4>Types</h4>
         <ul id="type_nav" class="nav nav-pills">
-          <li id="image"><a>Images</a></li>
-          <li id="gif"><a>Gifs</a></li>
-          <li id="video"><a>Video</a></li>
+          <li id="type_image"><a>Images</a></li>
+          <li id="type_gif"><a>Gifs</a></li>
+          <li id="type_video"><a>Video</a></li>
         </ul>
       </div>
-      <div class="col-md-10">
+      <div class="col-md-2">
         <h4>Controls</h4>
         <ul id="control_nav" class="nav nav-pills">
-          <li id="shuffle"><a>Shuffle</a></li>
-          <li id="group_filter"><a>Group Filter</a></li>
+          <li id="controls_shuffle"><a>Shuffle</a></li>
+          <li id="controls_group_filter"><a>Group Filter</a></li>
+          <li id="controls_union"><a>Union Filter</a></li>
+        </ul>
+      </div>
+      <div class="col-md-8">
+        <h4>Page Size</h4>
+        <ul id="page_size_nav" class="nav nav-pills">
+          <li id="page_size_10"><a>10</a></li>
+          <li id="page_size_25"><a>25</a></li>
+          <li id="page_size_all"><a>All</a></li>
         </ul>
       </div>
     </div>
@@ -59,7 +68,7 @@
       <%elsif resource.type == 'swf'%>
         <embed class="resource-content" src="<%=resource.location%>">
       <%else%>
-        <%= image_tag resource.location, class: 'resource-content' %>
+        <%= image_tag resource.location, lazy: true, class: 'resource-content img-rounded' %>
       <%end%>
       <form id="form-<%=resource.id%>" class="resource-group-form">
         <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
@@ -78,15 +87,14 @@
 <script>
   function check_nav() {
     $('.nav li').removeClass('active');
-    <%params.select{|k,_| %w(groups types controls).include?(k)}.each do |key, value|%>
-      <%if key == 'groups'%>
-        <%value.each do |group|%>
-          $('#group-<%=group%>').addClass('active');
-        <%end%>
-      <%else%>
-        <%value.each do |val|%>
-          $('#<%=val%>').addClass('active');
-        <%end%>
+    <%params.select{|k,_| %w(groups type controls page_size).include?(k)}.each do |key, value|%>
+      <% case key %>
+        <% when 'groups', 'controls' %>
+          <%value.each do |val|%>
+            $('#<%=key%>_<%=val%>').addClass('active');
+          <%end%>
+        <% else %>
+          $('#<%=key%>_<%=value%>').addClass('active');
       <%end%>
     <%end%>
   }
@@ -113,28 +121,30 @@
   $(".nav-pills li").click(function() {
     var id  = $(this).attr('id');
 
-    if((id == 'image' || id == 'gif' || id == 'video') && !$(this).hasClass('active')) {
+    if((/type/g).test(id) && !$(this).hasClass('active')) {
       $('#type_nav li').removeClass('active');
+    }
+    if((/page_size/g).test(id) && !$(this).hasClass('active')) {
+      $('#page_size_nav li').removeClass('active');
     }
     $(this).toggleClass('active');
 
     var group_filter = $("#group_nav.nav-pills li.active"),
         type_filter = $("#type_nav.nav-pills li.active"),
         control_filter = $("#control_nav.nav-pills li.active"),
+        page_size_nav = $("#page_size_nav.nav-pills li.active"),
         groups = [],
-        types = [],
         controls = [];
 
     for(var i=0; i < group_filter.length; i++ ) {
-      groups[i] = 'groups[]='+group_filter[i].id.replace('group-', '');
-    }
-    for(i=0; i < type_filter.length; i++ ) {
-      types[i] = 'types[]='+type_filter[i].id;
+      groups[i] = 'groups[]='+group_filter[i].id.replace('groups_', '');
     }
     for(i=0; i < control_filter.length; i++ ) {
-      controls[i] = 'controls[]='+control_filter[i].id;
+      controls[i] = 'controls[]='+control_filter[i].id.replace('controls_', '');
     }
-    var query = groups.concat(types).concat(controls);
+    var type = type_filter.first().attr('id') ? 'type='+type_filter.first().attr('id').replace('type_', '') : [];
+    var page_size = page_size_nav.first().attr('id') ? 'page_size='+page_size_nav.first().attr('id').replace('page_size_', '') : [];
+    var query = groups.concat(type, controls, page_size);
     window.location.search = '?'+query.join('&');
   });
 

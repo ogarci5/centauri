@@ -7,22 +7,26 @@ class ResourcesController < ApplicationController
   respond_to :html, :json
 
   def index
-    @resources = Resource.joins(:groups).uniq
-    @resources = @resources.where(groups: {id: params[:groups]}) if params[:groups].present?
+    @resources = Resource.includes(:groups)
 
-    @resources = @resources.for_type(:image) if params[:types].try(:include?, 'image')
-    @resources = @resources.for_type(:gif) if params[:types].try(:include?, 'gif')
-    @resources = @resources.for_type(:video) if params[:types].try(:include?, 'video')
+    if params[:controls].try(:include?, 'union')
+      @resources = @resources.where(groups: {id: params[:groups]}) if params[:groups].present?
+    else
+      @resources = @resources.with_groups(params[:groups]) if params[:groups].present?
+    end
+
+    @resources = @resources.for_type(params[:type])
 
     if params[:controls].try(:include?, 'shuffle')
       cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i
       @resources = @resources.order("RAND(#{cookies[:seed]})")
     else
+      @resources = @resources.order(updated_at: :desc)
       cookies.delete(:seed)
     end
     @resources = @resources.where(groups: {id: nil}) if params[:controls].try(:include?, 'group_filter')
-
-    @resources = @resources.paginate(page: params[:page], per_page: 10)
+    size = params[:page_size] == 'all' ? @resources.count : params[:page_size].presence
+    @resources = @resources.paginate(page: params[:page], per_page: size || 10)
 
     @groups = Group.all
     @main_groups = @groups.where(main: true)

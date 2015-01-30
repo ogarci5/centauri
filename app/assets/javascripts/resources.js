@@ -9,6 +9,7 @@ $(document).ready( function() {
   $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
     $('#resource_file_text').val(label);
   });
+  $('img').lazyload();
 });
 
 function update_group(checked, id, group_id) {
