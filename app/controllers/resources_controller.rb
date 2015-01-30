@@ -15,9 +15,9 @@ class ResourcesController < ApplicationController
       @resources = @resources.with_groups(params[:groups]) if params[:groups].present?
     end
 
-    @resources = @resources.for_type(:image) if params[:types].try(:include?, 'image')
-    @resources = @resources.for_type(:gif) if params[:types].try(:include?, 'gif')
-    @resources = @resources.for_type(:video) if params[:types].try(:include?, 'video')
+    @resources = @resources.for_type('image') if params[:types].try(:include?, 'image')
+    @resources = @resources.for_type('gif') if params[:types].try(:include?, 'gif')
+    @resources = @resources.for_type('video') if params[:types].try(:include?, 'video')
 
     if params[:controls].try(:include?, 'shuffle')
       cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i

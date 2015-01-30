@@ -8,8 +8,14 @@ class Resource < ActiveRecord::Base
   validates :file_file_name, presence: true, uniqueness: true
 
   def self.for_type(type)
-    return where('file_content_type LIKE ?', "%#{type}%") unless type.to_s == 'video'
-    where('file_content_type LIKE ? OR file_content_type LIKE ?', "%#{type}%", '%octet-stream%')
+    case type
+      when 'image'
+        where('file_content_type LIKE ? AND file_content_type NOT LIKE ?', "#{type}%", '%gif%')
+      when 'video'
+        where('file_content_type LIKE ? OR file_content_type LIKE ?', "%#{type}%", '%octet-stream%')
+      else
+        where('file_content_type LIKE ?', "%#{type}%")
+    end
   end
 
   def self.with_groups(ids)
