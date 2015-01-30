@@ -59,7 +59,7 @@
       <%elsif resource.type == 'swf'%>
         <embed class="resource-content" src="<%=resource.location%>">
       <%else%>
-        <%= image_tag resource.location, class: 'resource-content' %>
+        <%= image_tag resource.location, class: 'resource-content img-rounded', lazy: true %>
       <%end%>
       <form id="form-<%=resource.id%>" class="resource-group-form">
         <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
