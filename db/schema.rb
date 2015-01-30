@@ -25,6 +25,8 @@ ActiveRecord::Schema.define(version: 20150129070114) do
     t.integer "resource_id", limit: 4, null: false
   end
 
+  add_index "groups_resources", ["group_id", "resource_id"], name: "index_groups_resources_on_group_id_and_resource_id", using: :btree
+
   create_table "resources", force: :cascade do |t|
     t.string   "name",              limit: 255
     t.datetime "created_at",                    null: false
