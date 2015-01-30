@@ -8,6 +8,7 @@ class Resource < ActiveRecord::Base
   validates :file_file_name, presence: true, uniqueness: true
 
   def self.for_type(type)
+    return self.current_scope if type.blank?
     case type
       when 'image'
         where('file_content_type LIKE ? AND file_content_type NOT LIKE ?', "#{type}%", '%gif%')
