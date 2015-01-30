@@ -21,6 +21,7 @@ class ResourcesController < ApplicationController
       cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i
       @resources = @resources.order("RAND(#{cookies[:seed]})")
     else
+      @resources = @resources.order(updated_at: :desc)
       cookies.delete(:seed)
     end
     @resources = @resources.where(groups: {id: nil}) if params[:controls].try(:include?, 'group_filter')
