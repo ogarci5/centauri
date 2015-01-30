@@ -60,7 +60,7 @@
   <%@resources.each do |resource|%>
     <div class="col-md-12">
       <%if resource.type == 'video'%>
-        <video class="resource-content" src="<%=resource.location%>" autoplay="" loop="" controls="">
+        <video class="resource-content" src="<%=resource.location%>" muted=""  autoplay="" loop="" controls="">
         </video>
       <%elsif resource.type == 'octet-stream'%>
         <video class="resource-content" src="<%=resource.location%>" autoplay="" loop="" controls="">
