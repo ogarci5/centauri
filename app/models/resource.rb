@@ -12,6 +12,10 @@ class Resource < ActiveRecord::Base
     where('file_content_type LIKE ? OR file_content_type LIKE ?', "%#{type}%", '%octet-stream%')
   end
 
+  def self.with_groups(ids)
+    Resource.where(id: self.select{|r| r.group_ids.map(&:to_i) & ids.map(&:to_i) == ids.map(&:to_i)}.map(&:id)).includes(:groups)
+  end
+
   def type
     types = self.file_content_type.split('/')
     self.file_content_type == 'application/octet-stream' ? types.last : types.first

@@ -7,8 +7,13 @@ class ResourcesController < ApplicationController
   respond_to :html, :json
 
   def index
-    @resources = Resource.joins(:groups).uniq
-    @resources = @resources.where(groups: {id: params[:groups]}) if params[:groups].present?
+    @resources = Resource.includes(:groups)
+
+    if params[:controls].try(:include?, 'union')
+      @resources = @resources.where(groups: {id: params[:groups]}) if params[:groups].present?
+    else
+      @resources = @resources.with_groups(params[:groups]) if params[:groups].present?
+    end
 
     @resources = @resources.for_type(:image) if params[:types].try(:include?, 'image')
     @resources = @resources.for_type(:gif) if params[:types].try(:include?, 'gif')
