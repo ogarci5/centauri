@@ -49,8 +49,10 @@ $tertiary-color: #B33500;
   }
 }
 .resource-close {
-  float:none;
-  font-size:14px;
+  margin-right: 4px;
+  float: none;
+  font-size: 18px;
+  line-height: 0;
 }
 .cen-item:hover {
   background-color: $primary-color;
@@ -78,6 +80,7 @@ $tertiary-color: #B33500;
   margin-left: auto;
   margin-right: auto;
   display: block;
+  border-radius: 6px;
 }
 
 .panel-centauri {
@@ -133,4 +136,16 @@ $tertiary-color: #B33500;
 
 .cen-nav-header {
   margin-top: 0;
+  a {
+    color: inherit;
+    &:hover {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+}
+
+.cen-back-to-top {
+  display: inline-block;
+  margin: 20px 0;
 }

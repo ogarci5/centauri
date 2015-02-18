@@ -1,20 +1,33 @@
-<%if @resource.type == 'video'%>
-  <video class="resource-content" src="<%=@resource.location%>" autoplay="" loop="" controls="">
-  </video>
-<%elsif @resource.type == 'octet-stream'%>
-  <video class="resource-content" src="<%=@resource.location%>" autoplay="" loop="" controls="">
-  </video>
-<%elsif @resource.type == 'swf'%>
-  <embed class="resource-content" src="<%=r@esource.location%>">
-<%else%>
-  <%= image_tag @resource.location, class: 'resource-content' %>
-<%end%>
-<form id="form-<%=@resource.id%>" class="resource-form">
-  <a data-href="<%=resource_path(@resource)%>" class="resource-close close">&times;</a>
-  <%@main_groups.each do |group|%>
-    <label class="checkbox-inline">
-      <input id="group-<%=group.id%>-<%=@resource.id%>" onclick="checkClick(this.checked, <%=@resource.id%>, <%=group.id%>)" type="checkbox" value="<%=group.name%>" <%= @resource.groups.member?(group) ? 'checked="true"' : ''%>> <%=group.name%>
-    </label>
-  <%end%>
-</form>
-<%= link_to 'Back', resources_path, class: 'btn btn-default' %>
+<%= render partial: 'destroy_modal' %>
+<div class="row">
+  <div class="col-md-12">
+    <% if @resource.type == 'video' %>
+      <video class="resource-content" src="<%=@resource.location%>" autoplay="" loop="" controls="">
+      </video>
+    <% elsif @resource.type == 'octet-stream' %>
+      <video class="resource-content" src="<%=@resource.location%>" autoplay="" loop="" controls="">
+      </video>
+    <% elsif @resource.type == 'swf' %>
+      <embed class="resource-content" src="<%=@resource.location%>">
+    <% else %>
+      <%= image_tag @resource.location, class: 'resource-content' %>
+    <% end %>
+    <form id="form-<%=@resource.id%>" class="resource-group-form">
+      <a data-href="<%=resource_path(@resource)%>" class="resource-close close">&times;</a>
+      <% @main_groups.each do |group| %>
+        <label class="checkbox-inline">
+          <%=check_box_tag('resource[group_id]', group.name, @resource.group_ids.include?(group.id), id: "group-#{group.id}-#{@resource.id}",
+                           onclick: "update_group(this.checked, #{@resource.id}, #{group.id})")%><%=group.name.titleize%>
+        </label>
+      <% end %>
+    </form>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <%= link_to 'Back', resources_path, class: 'btn btn-default' %>
+    <%= link_to new_resource_path, class: 'btn btn-default' do %>
+      New Resource  <span class="glyphicon glyphicon-plus"></span>
+    <% end %>
+  </div>
+</div>
