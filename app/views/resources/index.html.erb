@@ -1,75 +1,72 @@
 <p id="notice"><%= notice %></p>
-<div class="panel panel-default">
-  <div class="panel-body">
-    <div class="row">
-      <div class="col-md-12">
-        <h4 class="cen-nav-header">Groups</h4>
-        <ul id="group_nav" class="nav nav-pills">
-          <%@groups.each do |group|%>
-            <li id="groups_<%="#{group.id}"%>"><a><%=group.name.titleize%></a></li>
-          <%end%>
-        </ul>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-2">
-        <h4>Types</h4>
-        <ul id="type_nav" class="nav nav-pills">
-          <li id="type_image"><a>Images</a></li>
-          <li id="type_gif"><a>Gifs</a></li>
-          <li id="type_video"><a>Video</a></li>
-        </ul>
-      </div>
-      <div class="col-md-2">
-        <h4>Controls</h4>
-        <ul id="control_nav" class="nav nav-pills">
-          <li id="controls_shuffle"><a>Shuffle</a></li>
-          <li id="controls_group_filter"><a>Group Filter</a></li>
-          <li id="controls_union"><a>Union Filter</a></li>
-        </ul>
-      </div>
-      <div class="col-md-8">
-        <h4>Page Size</h4>
-        <ul id="page_size_nav" class="nav nav-pills">
-          <li id="page_size_10"><a>10</a></li>
-          <li id="page_size_25"><a>25</a></li>
-          <li id="page_size_all"><a>All</a></li>
-        </ul>
+<%= render partial: 'destroy_modal' %>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-12">
+            <h4 class="cen-nav-header"><%= link_to 'Groups', groups_path %></h4>
+            <ul id="group_nav" class="nav nav-pills">
+              <%@groups.each do |group|%>
+                <li id="groups_<%="#{group.id}"%>"><a><%=group.name.titleize%></a></li>
+              <%end%>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2">
+            <h4>Types</h4>
+            <ul id="type_nav" class="nav nav-pills">
+              <li id="type_image"><a>Images</a></li>
+              <li id="type_gif"><a>Gifs</a></li>
+              <li id="type_video"><a>Video</a></li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h4>Controls</h4>
+            <ul id="control_nav" class="nav nav-pills">
+              <li id="controls_shuffle"><a>Shuffle</a></li>
+              <li id="controls_group_filter"><a>Group Filter</a></li>
+              <li id="controls_union"><a>Union Filter</a></li>
+            </ul>
+          </div>
+          <div class="col-md-2">
+            <h4>Page Size</h4>
+            <ul id="page_size_nav" class="nav nav-pills">
+              <li id="page_size_10"><a>10</a></li>
+              <li id="page_size_25"><a>25</a></li>
+              <li id="page_size_all"><a>All</a></li>
+            </ul>
+          </div>
+          <div class="col-md-5">
+            <h4>Actions</h4>
+            <%= toggle_groups_button(cookies[:toggle_groups] == 'true' ? true : false) %>
+            <%= link_to new_resource_path, class: 'btn btn-default' do %>
+              New Resource  <span class="glyphicon glyphicon-plus"></span>
+            <% end %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
-<div id="destroyModal" class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-body">
-        <p>Are you sure you want to delete this resource?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-        <%=link_to 'Yes', '', class: 'btn btn-primary', method: :delete%>
-      </div>
-    </div>
-  </div>
-</div>
-<div>
-  <%= toggle_groups_button(cookies[:toggle_groups] == 'true' ? true : false) %>
-  <a class="btn btn-default" href="/resources/new">New Resource</a>
-</div>
-<div class="row col-md-12">
-  <%@resources.each do |resource|%>
+<% @resources.each do |resource| %>
+  <div class="row">
     <div class="col-md-12">
-      <%if resource.type == 'video'%>
-        <video class="resource-content" src="<%=resource.location%>" muted=""  autoplay="" loop="" controls="">
-        </video>
-      <%elsif resource.type == 'octet-stream'%>
-        <video class="resource-content" src="<%=resource.location%>" autoplay="" loop="" controls="">
-        </video>
-      <%elsif resource.type == 'swf'%>
-        <embed class="resource-content" src="<%=resource.location%>">
-      <%else%>
-        <%= image_tag resource.location, lazy: true, class: 'resource-content img-rounded' %>
-      <%end%>
+      <%= link_to resource do %>
+        <% if resource.type == 'video' %>
+          <video class="resource-content" src="<%=resource.location%>" muted=""  autoplay="" loop="" controls="">
+          </video>
+        <% elsif resource.type == 'octet-stream' %>
+          <video class="resource-content" src="<%=resource.location%>" autoplay="" loop="" controls="">
+          </video>
+        <% elsif resource.type == 'swf' %>
+          <embed class="resource-content" src="<%=resource.location%>">
+        <% else %>
+          <%= image_tag resource.location, lazy: true, class: 'resource-content' %>
+        <% end %>
+      <% end %>
       <form id="form-<%=resource.id%>" class="resource-group-form">
         <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
         <%@main_groups.each do |group|%>
@@ -80,23 +77,29 @@
         <%end%>
       </form>
     </div>
-  <%end%>
-  <a class="btn btn-default" href="#brand">Back to Top</a>
-  <%= will_paginate @resources, renderer: BootstrapPagination::Rails %>
+  </div>
+<% end %>
+<div class="row">
+  <div class="col-md-6">
+    <a class="btn btn-default cen-back-to-top" href="#brand">Back to Top</a>
+  </div>
+  <div class="col-md-6">
+    <%= will_paginate @resources, renderer: BootstrapPagination::Rails, class: 'pull-right' %>
+  </div>
 </div>
 <script>
   function check_nav() {
     $('.nav li').removeClass('active');
-    <%params.select{|k,_| %w(groups type controls page_size).include?(k)}.each do |key, value|%>
+    <% params.select{|k,_| %w(groups type controls page_size).include?(k)}.each do |key, value| %>
       <% case key %>
         <% when 'groups', 'controls' %>
-          <%value.each do |val|%>
+          <% value.each do |val| %>
             $('#<%=key%>_<%=val%>').addClass('active');
-          <%end%>
+          <% end %>
         <% else %>
           $('#<%=key%>_<%=value%>').addClass('active');
-      <%end%>
-    <%end%>
+      <% end %>
+    <% end %>
   }
 
   function set_group_forms(toggle) {
@@ -110,12 +113,6 @@
       type: "GET",
       dataType: "html"
     });
-  });
-
-  $('.resource-close').click(function() {
-    var href = $(this).attr('data-href');
-    $('#destroyModal a').attr('href', href);
-    $('#destroyModal').modal('show');
   });
 
   $(".nav-pills li").click(function() {

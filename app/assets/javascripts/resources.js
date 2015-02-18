@@ -9,7 +9,14 @@ $(document).ready( function() {
   $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
     $('#resource_file_text').val(label);
   });
+
   $('img').lazyload();
+
+  $('.resource-close').click(function() {
+    var href = $(this).attr('data-href');
+    $('#destroyModal a').attr('href', href);
+    $('#destroyModal').modal('show');
+  });
 });
 
 function update_group(checked, id, group_id) {
