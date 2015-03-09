@@ -13,6 +13,7 @@ class ResourcesController < ApplicationController
       @resources = params[:controls].try(:include?, 'union') ? @resources.where(groups: {id: params[:groups]}) : @resources.with_groups(params[:groups])
     end
 
+    @resources = @resources.where(groups: {id: params[:filter]}) if params[:filter].present?
     @resources = @resources.for_type(params[:type])
 
     if params[:controls].try(:include?, 'shuffle')
