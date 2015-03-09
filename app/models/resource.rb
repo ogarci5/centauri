@@ -1,5 +1,6 @@
 class Resource < ActiveRecord::Base
-  has_and_belongs_to_many :groups
+  has_many :groups_resources
+  has_many :groups, through: :groups_resources
 
   attr_accessor :local
 
@@ -20,7 +21,8 @@ class Resource < ActiveRecord::Base
   end
 
   def self.with_groups(ids)
-    Resource.where(id: self.select{|r| r.group_ids.map(&:to_i) & ids.map(&:to_i) == ids.map(&:to_i)}.map(&:id)).includes(:groups)
+    ids = ids.map(&:to_i)
+    Resource.where(id: self.select{|r| (r.group_ids || []) & ids == ids}.map(&:id)).includes(:groups)
   end
 
   def type

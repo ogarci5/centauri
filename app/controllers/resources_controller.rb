@@ -9,10 +9,8 @@ class ResourcesController < ApplicationController
   def index
     @resources = Resource.includes(:groups)
 
-    if params[:controls].try(:include?, 'union')
-      @resources = @resources.where(groups: {id: params[:groups]}) if params[:groups].present?
-    else
-      @resources = @resources.with_groups(params[:groups]) if params[:groups].present?
+    if params[:groups].present?
+      @resources = params[:controls].try(:include?, 'union') ? @resources.where(groups: {id: params[:groups]}) : @resources.with_groups(params[:groups])
     end
 
     @resources = @resources.for_type(params[:type])
@@ -21,14 +19,15 @@ class ResourcesController < ApplicationController
       cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i
       @resources = @resources.order("RAND(#{cookies[:seed]})")
     else
-      @resources = @resources.order(updated_at: :desc)
       cookies.delete(:seed)
+      @resources = @resources.order(updated_at: :desc)
     end
+
     @resources = @resources.where(groups: {id: nil}) if params[:controls].try(:include?, 'group_filter')
     size = params[:page_size] == 'all' ? @resources.count : params[:page_size].presence
     @resources = @resources.paginate(page: params[:page], per_page: size || 10)
 
-    @groups = Group.all
+    @groups = Group.filters
     @main_groups = Group.main
   end
 
