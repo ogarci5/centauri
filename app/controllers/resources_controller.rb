@@ -29,7 +29,7 @@ class ResourcesController < ApplicationController
     @resources = @resources.paginate(page: params[:page], per_page: size || 10)
 
     @groups = Group.all
-    @main_groups = @groups.where(main: true)
+    @main_groups = Group.main
   end
 
   def show

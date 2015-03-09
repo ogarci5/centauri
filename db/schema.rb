@@ -11,21 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150129070114) do
+ActiveRecord::Schema.define(version: 20150309002611) do
 
   create_table "groups", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.boolean  "main",       limit: 1
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+    t.boolean  "filter",     limit: 1
+    t.integer  "group_id",   limit: 4
+    t.boolean  "visible",    limit: 1
   end
+
+  add_index "groups", ["group_id"], name: "index_groups_on_group_id", using: :btree
 
   create_table "groups_resources", id: false, force: :cascade do |t|
     t.integer "group_id",    limit: 4, null: false
     t.integer "resource_id", limit: 4, null: false
   end
-
-  add_index "groups_resources", ["group_id", "resource_id"], name: "index_groups_resources_on_group_id_and_resource_id", using: :btree
 
   create_table "resources", force: :cascade do |t|
     t.string   "name",              limit: 255
@@ -36,6 +39,7 @@ ActiveRecord::Schema.define(version: 20150129070114) do
     t.integer  "file_file_size",    limit: 4
     t.datetime "file_updated_at"
     t.string   "url",               limit: 255
+    t.integer  "order",             limit: 4
   end
 
   create_table "users", force: :cascade do |t|
@@ -56,4 +60,5 @@ ActiveRecord::Schema.define(version: 20150129070114) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "groups", "groups"
 end

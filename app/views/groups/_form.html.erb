@@ -1,6 +1,9 @@
 <%= bootstrap_form_for(@group) do |f| %>
   <%=f.alert_message 'Please fix the errors below.' %>
   <%=f.text_field :name %>
+  <%=f.select :group_id, Group.pluck(:name, :id).to_a, include_blank: 'None', label: 'Parent' %>
+  <%=f.check_box :filter %>
+  <%=f.check_box :visible %>
   <%=f.check_box :main %>
   <%= link_to 'Back', groups_path, class: 'btn btn-default' %>
   <%=f.primary %>
