@@ -17,6 +17,10 @@ $(document).ready( function() {
     $('#destroyModal a').attr('href', href);
     $('#destroyModal').modal('show');
   });
+
+  $('#filter-select').change(function() {
+    set_query_string();
+  });
 });
 
 function update_group(checked, id, group_id) {

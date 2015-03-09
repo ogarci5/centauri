@@ -27,7 +27,7 @@ class ResourcesController < ApplicationController
     size = params[:page_size] == 'all' ? @resources.count : params[:page_size].presence
     @resources = @resources.paginate(page: params[:page], per_page: size || 10)
 
-    @filters = Group.filters
+    @filters = Group.filter_hierarchy
     @groups = Group.not_filters
     @main_groups = Group.main
   end

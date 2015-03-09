@@ -4,14 +4,16 @@ module GroupsHelper
     group.groups.map(&:name).sort.join('<br>').html_safe.presence || 'None'
   end
 
-  def filter_select(filters)
-    select_tag :group_id, display_array_descendents(filters) {|group, depth| [group.id, "#{'-' * depth} #{group.name}"]}
+  def filter_select(filters, current_filter)
+    select_tag :group_id, options_for_select((display_array_descendents(filters) do |group, depth|
+                                               ["#{(depth>0 ? ('&nbsp;'* depth)+'- ':'')}#{group.name}".html_safe, group.id]
+                                             end).flatten.each_slice(2).to_a, current_filter), include_blank: 'Choose Filter', id: 'filter-select'
   end
 
   def display_array_descendents(array, depth = -1, &block)
     array.map do |element|
       if element.is_a?(Array)
-        display_array_descendents(element,depth+1)
+        display_array_descendents(element, depth+1 , &block)
       else
         block.call(element, depth)
       end
