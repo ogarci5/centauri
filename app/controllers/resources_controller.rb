@@ -13,7 +13,12 @@ class ResourcesController < ApplicationController
       @resources = params[:controls].try(:include?, 'union') ? @resources.where(groups: {id: params[:groups]}) : @resources.with_groups(params[:groups])
     end
 
-    @resources = @resources.where(groups: {id: params[:filter]}) if params[:filter].present?
+    if params[:filter].present?
+      @resources = params[:controls].try(:include?, 'children') ?
+        @resources.where(groups: {id: Group.find(params[:filter]).self_with_descendents.flatten.map(&:id)}) :
+        @resources.where(groups: {id: params[:filter]})
+    end
+
     @resources = @resources.for_type(params[:type])
 
     if params[:controls].try(:include?, 'shuffle')

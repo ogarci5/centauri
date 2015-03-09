@@ -26,12 +26,13 @@
               <li id="type_video"><a>Video</a></li>
             </ul>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <h4>Controls</h4>
             <ul id="control_nav" class="nav nav-pills">
               <li id="controls_shuffle"><a>Shuffle</a></li>
               <li id="controls_group_filter"><a>Group Filter</a></li>
               <li id="controls_union"><a>Union Filter</a></li>
+              <li id="controls_children"><a>Include Children</a></li>
             </ul>
           </div>
           <div class="col-md-2">
@@ -42,7 +43,7 @@
               <li id="page_size_all"><a>All</a></li>
             </ul>
           </div>
-          <div class="col-md-5">
+          <div class="col-md-4">
             <h4>Actions</h4>
             <%= toggle_groups_button(cookies[:toggle_groups] == 'true' ? true : false) %>
             <%= link_to new_resource_path, class: 'btn btn-default' do %>
