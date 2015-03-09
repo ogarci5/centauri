@@ -1,5 +1,7 @@
 class Resource < ActiveRecord::Base
-  has_and_belongs_to_many :groups
+  has_many :groups_resources
+  has_many :groups, through: :groups_resources
+  has_many :filters, -> { where(filter: true) }, through: :groups_resources, source: :group
 
   attr_accessor :local
 
@@ -20,7 +22,8 @@ class Resource < ActiveRecord::Base
   end
 
   def self.with_groups(ids)
-    Resource.where(id: self.select{|r| r.group_ids.map(&:to_i) & ids.map(&:to_i) == ids.map(&:to_i)}.map(&:id)).includes(:groups)
+    ids = ids.map(&:to_i)
+    Resource.where(id: self.select{|r| (r.group_ids || []) & ids == ids}.map(&:id)).includes(:groups)
   end
 
   def type
@@ -34,5 +37,9 @@ class Resource < ActiveRecord::Base
 
   def file_from_url(url)
     self.file = URI.parse(url)
+  end
+
+  def filter
+    filters.first
   end
 end

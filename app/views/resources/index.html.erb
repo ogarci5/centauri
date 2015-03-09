@@ -6,7 +6,10 @@
       <div class="panel-body">
         <div class="row">
           <div class="col-md-12">
-            <h4 class="cen-nav-header"><%= link_to 'Groups', groups_path %></h4>
+            <h4 class="cen-nav-header">
+              <%= link_to 'Groups', groups_path %>
+              <%= filter_select(@filters, params[:filter]) %>
+            </h4>
             <ul id="group_nav" class="nav nav-pills">
               <%@groups.each do |group|%>
                 <li id="groups_<%="#{group.id}"%>"><a><%=group.name.titleize%></a></li>
@@ -23,12 +26,13 @@
               <li id="type_video"><a>Video</a></li>
             </ul>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4">
             <h4>Controls</h4>
             <ul id="control_nav" class="nav nav-pills">
               <li id="controls_shuffle"><a>Shuffle</a></li>
               <li id="controls_group_filter"><a>Group Filter</a></li>
               <li id="controls_union"><a>Union Filter</a></li>
+              <li id="controls_children"><a>Include Children</a></li>
             </ul>
           </div>
           <div class="col-md-2">
@@ -39,7 +43,7 @@
               <li id="page_size_all"><a>All</a></li>
             </ul>
           </div>
-          <div class="col-md-5">
+          <div class="col-md-4">
             <h4>Actions</h4>
             <%= toggle_groups_button(cookies[:toggle_groups] == 'true' ? true : false) %>
             <%= link_to new_resource_path, class: 'btn btn-default' do %>
@@ -106,6 +110,27 @@
     toggle ? $('.resource-group-form').show() : $('.resource-group-form').hide();
   }
 
+  function set_query_string() {
+    var group_filter = $("#group_nav.nav-pills li.active"),
+      type_filter = $("#type_nav.nav-pills li.active"),
+      control_filter = $("#control_nav.nav-pills li.active"),
+      page_size_nav = $("#page_size_nav.nav-pills li.active"),
+      groups = [],
+      controls = [],
+      filter = ['filter='+$('#filter-select').val()];
+
+    for(var i=0; i < group_filter.length; i++ ) {
+      groups[i] = 'groups[]='+group_filter[i].id.replace('groups_', '');
+    }
+    for(i=0; i < control_filter.length; i++ ) {
+      controls[i] = 'controls[]='+control_filter[i].id.replace('controls_', '');
+    }
+    var type = type_filter.first().attr('id') ? 'type='+type_filter.first().attr('id').replace('type_', '') : [];
+    var page_size = page_size_nav.first().attr('id') ? 'page_size='+page_size_nav.first().attr('id').replace('page_size_', '') : [];
+    var query = groups.concat(type, controls, page_size, filter);
+    window.location.search = '?'+query.join('&');
+  }
+
   $('#toggle-groups').click(function() {
     $('.resource-group-form').toggle();
     $.ajax({
@@ -126,23 +151,7 @@
     }
     $(this).toggleClass('active');
 
-    var group_filter = $("#group_nav.nav-pills li.active"),
-        type_filter = $("#type_nav.nav-pills li.active"),
-        control_filter = $("#control_nav.nav-pills li.active"),
-        page_size_nav = $("#page_size_nav.nav-pills li.active"),
-        groups = [],
-        controls = [];
-
-    for(var i=0; i < group_filter.length; i++ ) {
-      groups[i] = 'groups[]='+group_filter[i].id.replace('groups_', '');
-    }
-    for(i=0; i < control_filter.length; i++ ) {
-      controls[i] = 'controls[]='+control_filter[i].id.replace('controls_', '');
-    }
-    var type = type_filter.first().attr('id') ? 'type='+type_filter.first().attr('id').replace('type_', '') : [];
-    var page_size = page_size_nav.first().attr('id') ? 'page_size='+page_size_nav.first().attr('id').replace('page_size_', '') : [];
-    var query = groups.concat(type, controls, page_size);
-    window.location.search = '?'+query.join('&');
+    set_query_string();
   });
 
   $(function() {

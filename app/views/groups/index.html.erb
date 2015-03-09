@@ -5,7 +5,10 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Main Group?</th>
+          <th>Children</th>
+          <th>Filter?</th>
+          <th>Visible?</th>
+          <th>Main?</th>
         </tr>
       </thead>
 
@@ -13,6 +16,9 @@
       <% @groups.each do |group| %>
         <tr>
           <td><%=group.name%></td>
+          <td><%=children_names(group)%></td>
+          <td><%=group.filter?%></td>
+          <td><%=group.visible?%></td>
           <td>
             <%=group.main?%>
             <%= link_to '&times;'.html_safe, group, class: 'close', method: :delete %>

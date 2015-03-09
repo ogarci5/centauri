@@ -9,10 +9,14 @@ class ResourcesController < ApplicationController
   def index
     @resources = Resource.includes(:groups)
 
-    if params[:controls].try(:include?, 'union')
-      @resources = @resources.where(groups: {id: params[:groups]}) if params[:groups].present?
-    else
-      @resources = @resources.with_groups(params[:groups]) if params[:groups].present?
+    if params[:groups].present?
+      @resources = params[:controls].try(:include?, 'union') ? @resources.where(groups: {id: params[:groups]}) : @resources.with_groups(params[:groups])
+    end
+
+    if params[:filter].present?
+      @resources = params[:controls].try(:include?, 'children') ?
+        @resources.where(groups: {id: Group.find(params[:filter]).self_with_descendents.flatten.map(&:id)}) :
+        @resources.where(groups: {id: params[:filter]})
     end
 
     @resources = @resources.for_type(params[:type])
@@ -21,15 +25,17 @@ class ResourcesController < ApplicationController
       cookies[:seed] ||= SecureRandom.random_number.to_s[2..20].to_i
       @resources = @resources.order("RAND(#{cookies[:seed]})")
     else
-      @resources = @resources.order(updated_at: :desc)
       cookies.delete(:seed)
+      @resources = @resources.order(updated_at: :desc)
     end
+
     @resources = @resources.where(groups: {id: nil}) if params[:controls].try(:include?, 'group_filter')
     size = params[:page_size] == 'all' ? @resources.count : params[:page_size].presence
     @resources = @resources.paginate(page: params[:page], per_page: size || 10)
 
-    @groups = Group.all
-    @main_groups = @groups.where(main: true)
+    @filters = Group.filter_hierarchy
+    @groups = Group.not_filters
+    @main_groups = Group.main
   end
 
   def show
@@ -60,18 +66,7 @@ class ResourcesController < ApplicationController
         @group = Group.where(group_params.slice(:name)).first || Group.new(group_params)
 
         if @group.save
-          Dir.entries(resource_params[:local]).each do |entry|
-            dir = resource_params[:local]+entry
-            @resource = @group.resources.build(resource_params)
-
-            File.open(dir) do |f|
-              @resource.file = f
-            end if File.file?(dir)
-
-            if @resource.save
-              @group.resources << @resource
-            end
-          end
+          run_through_directory(@group, resource_params[:local])
 
           redirect_to resources_path
         else
@@ -153,5 +148,30 @@ class ResourcesController < ApplicationController
       dirs.sort!.collect! {|d| {name: d+'/', type: 'directory'}}
       files.sort!.collect! {|f| {name: f, type: 'file'}}
       @list = dirs + files
+    end
+
+    def run_through_directory(group, location)
+      Dir.entries(location).reject{|d| d == '.' || d == '..'}.each do |entry|
+        next if entry.start_with?('.') # We do not want hidden files
+        dir = location + entry
+
+        if File.directory?(dir)
+          # If this is a directory then we need to set the parent as a filter
+          child_group = Group.where(name: entry).first || Group.create(name: entry, group_id: group.id)
+          group.filter = true
+          group.save
+
+          run_through_directory(child_group, dir+'/')
+        else
+          @resource = group.resources.build(resource_params)
+
+          File.open(dir) do |file|
+            @resource.file = file
+          end
+
+          group.resources << @resource if @resource.save
+        end
+
+      end
     end
 end
