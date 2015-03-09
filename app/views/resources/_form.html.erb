@@ -10,6 +10,12 @@
           </div>
           <div class="checkbox">
             <label>
+              <input name="group[filter]" type="hidden" value="false" />
+              <input type="checkbox" id="group_main" name="group[filter]" value="true" />Filter?
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
               <input name="group[main]" type="hidden" value="false" />
               <input type="checkbox" id="group_main" name="group[main]" value="true" />Main Group?
             </label>
@@ -110,7 +116,9 @@
   $('#create_resource').click(function(e) {
     e.preventDefault();
     if($('#directory').prop('checked')) {
-      $('#resource_local').val($('#current_directory').text());
+      var text = $('#current_directory').text();
+      $('#resource_local').val(text);
+      $('#group_name').val(text.match(/\w+\/$/)[0].replace('/', ''));
       $('#groupModal').modal('show');
     } else {
       $('#new_resource').submit();

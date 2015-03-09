@@ -60,18 +60,7 @@ class ResourcesController < ApplicationController
         @group = Group.where(group_params.slice(:name)).first || Group.new(group_params)
 
         if @group.save
-          Dir.entries(resource_params[:local]).each do |entry|
-            dir = resource_params[:local]+entry
-            @resource = @group.resources.build(resource_params)
-
-            File.open(dir) do |f|
-              @resource.file = f
-            end if File.file?(dir)
-
-            if @resource.save
-              @group.resources << @resource
-            end
-          end
+          run_through_directory(@group, resource_params[:local])
 
           redirect_to resources_path
         else
@@ -153,5 +142,31 @@ class ResourcesController < ApplicationController
       dirs.sort!.collect! {|d| {name: d+'/', type: 'directory'}}
       files.sort!.collect! {|f| {name: f, type: 'file'}}
       @list = dirs + files
+    end
+
+    def run_through_directory(group, location)
+      puts 'Current location: %s' % location
+      p group
+      p group.name
+
+      Dir.entries(location).reject{|d| d == '.' || d == '..'}.each do |entry|
+        next if entry.start_with?('.') # We do not want hidden files
+        dir = location + entry
+
+        if File.directory?(dir)
+          child_group = Group.where(name: entry).first || Group.create(name: entry, group_id: group.id)
+
+          run_through_directory(child_group, dir+'/')
+        else
+          @resource = group.resources.build(resource_params)
+
+          File.open(dir) do |file|
+            @resource.file = file
+          end
+
+          group.resources << @resource if @resource.save
+        end
+
+      end
     end
 end
