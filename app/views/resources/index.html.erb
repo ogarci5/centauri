@@ -6,7 +6,10 @@
       <div class="panel-body">
         <div class="row">
           <div class="col-md-12">
-            <h4 class="cen-nav-header"><%= link_to 'Groups', groups_path %></h4>
+            <h4 class="cen-nav-header">
+              <%= link_to 'Groups', groups_path %>
+              <%= filter_select(@filters) %>
+            </h4>
             <ul id="group_nav" class="nav nav-pills">
               <%@groups.each do |group|%>
                 <li id="groups_<%="#{group.id}"%>"><a><%=group.name.titleize%></a></li>

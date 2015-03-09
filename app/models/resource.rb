@@ -1,6 +1,7 @@
 class Resource < ActiveRecord::Base
   has_many :groups_resources
   has_many :groups, through: :groups_resources
+  has_many :filters, -> { where(filter: true) }, through: :groups_resources, source: :group
 
   attr_accessor :local
 
@@ -36,5 +37,9 @@ class Resource < ActiveRecord::Base
 
   def file_from_url(url)
     self.file = URI.parse(url)
+  end
+
+  def filter
+    filters.first
   end
 end

@@ -27,7 +27,8 @@ class ResourcesController < ApplicationController
     size = params[:page_size] == 'all' ? @resources.count : params[:page_size].presence
     @resources = @resources.paginate(page: params[:page], per_page: size || 10)
 
-    @groups = Group.filters
+    @filters = Group.filters
+    @groups = Group.not_filters
     @main_groups = Group.main
   end
 
@@ -144,16 +145,15 @@ class ResourcesController < ApplicationController
     end
 
     def run_through_directory(group, location)
-      puts 'Current location: %s' % location
-      p group
-      p group.name
-
       Dir.entries(location).reject{|d| d == '.' || d == '..'}.each do |entry|
         next if entry.start_with?('.') # We do not want hidden files
         dir = location + entry
 
         if File.directory?(dir)
+          # If this is a directory then we need to set the parent as a filter
           child_group = Group.where(name: entry).first || Group.create(name: entry, group_id: group.id)
+          group.filter = true
+          group.save
 
           run_through_directory(child_group, dir+'/')
         else
