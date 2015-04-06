@@ -37,6 +37,36 @@ class ResourcesController < ApplicationController
     @groups = Group.main
   end
 
+  def compare
+    @groups = Group.main
+    if params[:groups].present?
+      @resources = Resource.includes(:groups).where(groups: {id: params[:groups]})
+      @groups_resources = GroupsResource.where(group_id: params[:groups])
+      max_rank = @groups_resources.map(&:rank).max
+      count = @resources.count
+      if max_rank >= count
+        @resources = []
+      else
+        (0..count).each do |rank|
+          groups_resources = @groups_resources.where(rank: rank).order("RAND(#{SecureRandom.random_number.to_s[2..20].to_i})").first(2)
+          if groups_resources.count == 2
+            @groups_resources = groups_resources
+            break
+          end
+        end
+        @resources = Resource.includes(:groups).where(id: @groups_resources.map(&:resource_id)).order("RAND(#{SecureRandom.random_number.to_s[2..20].to_i})").first(2)
+        @rank = GroupsResource.where(resource_id: @resources, group_id: params[:groups]).map(&:rank).max
+      end
+    end
+  end
+
+  def rank
+    @groups_resource = GroupsResource.where(resource_id: params[:id], group_id: params[:group_id]).first
+    @groups_resource.update_attribute(:rank, params[:rank].to_i + 1)
+
+    redirect_to compare_resources_path(groups: [params[:group_id]])
+  end
+
   def show
     @main_groups = Group.where(main: true)
     respond_with(@resource)
