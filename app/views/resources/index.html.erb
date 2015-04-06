@@ -73,7 +73,7 @@
       <% end %>
       <form id="form-<%=resource.id%>" class="resource-group-form">
         <a data-href="<%=resource_path(resource)%>" class="resource-close close">&times;</a>
-        <%@main_groups.each do |group|%>
+        <%@groups.each do |group|%>
           <label class="checkbox-inline">
             <%=check_box_tag('resource[group_id]', group.name, resource.group_ids.include?(group.id), id: "group-#{group.id}-#{resource.id}",
                onclick: "update_group(this.checked, #{resource.id}, #{group.id})")%><%=group.name.titleize%>
