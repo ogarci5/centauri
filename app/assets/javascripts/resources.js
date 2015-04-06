@@ -10,7 +10,7 @@ $(document).ready( function() {
     $('#resource_file_text').val(label);
   });
 
-  $('img').lazyload({event : "mouseover"});
+  $('img').lazyload({threshold: 200});
 
   $('.resource-close').click(function() {
     var href = $(this).attr('data-href');
