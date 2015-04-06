@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150309002611) do
+ActiveRecord::Schema.define(version: 20150406204820) do
 
   create_table "groups", force: :cascade do |t|
     t.string   "name",       limit: 255
@@ -25,9 +25,12 @@ ActiveRecord::Schema.define(version: 20150309002611) do
 
   add_index "groups", ["group_id"], name: "index_groups_on_group_id", using: :btree
 
-  create_table "groups_resources", id: false, force: :cascade do |t|
-    t.integer "group_id",    limit: 4, null: false
-    t.integer "resource_id", limit: 4, null: false
+  create_table "groups_resources", force: :cascade do |t|
+    t.integer  "group_id",    limit: 4,             null: false
+    t.integer  "resource_id", limit: 4,             null: false
+    t.integer  "rank",        limit: 4, default: 0, null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
   end
 
   create_table "resources", force: :cascade do |t|
