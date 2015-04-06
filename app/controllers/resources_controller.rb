@@ -34,8 +34,7 @@ class ResourcesController < ApplicationController
     @resources = @resources.paginate(page: params[:page], per_page: size || 10)
 
     @filters = Group.filter_hierarchy
-    @groups = Group.not_filters
-    @main_groups = Group.main
+    @groups = Group.main
   end
 
   def show
