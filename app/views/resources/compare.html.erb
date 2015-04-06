@@ -1,0 +1,88 @@
+<p id="notice"><%= notice %></p>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-12">
+            <h4 class="cen-nav-header">
+              <%= link_to 'Groups', groups_path %>
+              <span class="pull-right"><%= link_to 'Back to Resources', resources_path %></span>
+            </h4>
+            <ul id="group_nav" class="nav nav-pills">
+              <%@groups.each do |group|%>
+                <li id="groups_<%="#{group.id}"%>"><a><%=group.name.titleize%></a></li>
+              <%end%>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <% if @resources.present? %>
+    <% @resources.each do |resource| %>
+      <div class="col-md-6">
+        <%= link_to rank_resource_path(resource, group_id: params[:groups].first, rank: @rank), method: :patch do %>
+          <span>Rank <%=resource.groups_resources.where(group_id: params[:groups]).first.rank%></span>
+          <% if resource.type == 'video' %>
+            <video class="resource-content" src="<%=resource.location%>" muted=""  autoplay="" loop="" controls="">
+            </video>
+          <% elsif resource.type == 'octet-stream' %>
+            <video class="resource-content" src="<%=resource.location%>" autoplay="" loop="" controls="">
+            </video>
+          <% elsif resource.type == 'swf' %>
+            <embed class="resource-content" src="<%=resource.location%>">
+          <% else %>
+            <%= image_tag resource.location, lazy: true, class: 'resource-content' %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="col-md-12">
+      <h4>Please select a group.</h4>
+    </div>
+  <% end %>
+</div>
+<script>
+  function check_nav() {
+    $('.nav li').removeClass('active');
+    <% params.select{|k,_| %w(groups).include?(k)}.each do |key, value| %>
+      <% case key %>
+        <% when 'groups', 'controls' %>
+          <% value.each do |val| %>
+            $('#<%=key%>_<%=val%>').addClass('active');
+          <% end %>
+        <% else %>
+          $('#<%=key%>_<%=value%>').addClass('active');
+      <% end %>
+    <% end %>
+  }
+
+  function set_query_string() {
+    var group_filter = $("#group_nav.nav-pills li.active"),
+      groups = [];
+
+    for(var i=0; i < group_filter.length; i++ ) {
+      groups[i] = 'groups[]='+group_filter[i].id.replace('groups_', '');
+    }
+    window.location.search = '?'+groups.join('&');
+  }
+
+  $(".nav-pills li").click(function() {
+    var id  = $(this).attr('id');
+
+    if((/groups/g).test(id) && !$(this).hasClass('active')) {
+      $('#group_nav li').removeClass('active');
+    }
+    $(this).toggleClass('active');
+
+    set_query_string();
+  });
+
+  $(function() {
+    check_nav();
+  });
+</script>

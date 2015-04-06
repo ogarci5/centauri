@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   resources :resources do
     member do
       post 'update_group'
+      patch 'rank'
+    end
+    collection do
+      get 'compare'
     end
   end
   resources :groups do
