@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     end
     collection do
       get 'compare'
+      get 'rankings'
     end
   end
   resources :groups do
