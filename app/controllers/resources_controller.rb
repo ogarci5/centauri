@@ -67,6 +67,13 @@ class ResourcesController < ApplicationController
     redirect_to compare_resources_path(groups: [params[:group_id]])
   end
 
+  def rankings
+    @groups = Group.main
+    if params[:groups].present?
+      @resources = Resource.includes(:groups, :groups_resources).where('groups_resources.group_id IN (?)', params[:groups]).order('groups_resources.rank DESC')
+    end
+  end
+
   def show
     @main_groups = Group.where(main: true)
     respond_with(@resource)

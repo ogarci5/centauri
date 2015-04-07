@@ -21,8 +21,8 @@
             <%= link_to resources_path, class: 'btn btn-default' do %>
               <span class="glyphicon glyphicon-home"></span>  Resources
             <% end %>
-            <%= link_to rankings_resources_path, class: 'btn btn-default' do %>
-              <span class="glyphicon glyphicon-signal"></span>  Rankings
+            <%= link_to compare_resources_path, class: 'btn btn-default' do %>
+              <span class="glyphicon glyphicon-tags"></span>  Compare
             <% end %>
           </div>
         </div>
@@ -30,12 +30,12 @@
     </div>
   </div>
 </div>
-<div class="row">
-  <% if @resources.present? %>
-    <% @resources.each do |resource| %>
-      <div class="col-md-6">
-        <%= link_to rank_resource_path(resource, group_id: params[:groups].first, rank: @rank), method: :patch do %>
-          <span>Rank <%=resource.groups_resources.where(group_id: params[:groups]).first.rank%></span>
+<% if @resources.present? %>
+  <% @resources.each do |resource| %>
+    <div class="row">
+      <div class="col-md-12">
+        <h5 class="text-center">Rank <%=resource.groups_resources.where(group_id: params[:groups]).first.rank%></h5>
+        <%= link_to resource do %>
           <% if resource.type == 'video' %>
             <video class="resource-content" src="<%=resource.location%>" muted=""  autoplay="" loop="" controls="">
             </video>
@@ -49,25 +49,27 @@
           <% end %>
         <% end %>
       </div>
-    <% end %>
-  <% else %>
+    </div>
+  <% end %>
+<% else %>
+  <div class="row">
     <div class="col-md-12">
       <h4>Please select a group.</h4>
     </div>
-  <% end %>
-</div>
+  </div>
+<% end %>
 <script>
   function check_nav() {
     $('.nav li').removeClass('active');
     <% params.select{|k,_| %w(groups).include?(k)}.each do |key, value| %>
-      <% case key %>
-        <% when 'groups', 'controls' %>
-          <% value.each do |val| %>
-            $('#<%=key%>_<%=val%>').addClass('active');
-          <% end %>
-        <% else %>
-          $('#<%=key%>_<%=value%>').addClass('active');
-      <% end %>
+    <% case key %>
+    <% when 'groups', 'controls' %>
+    <% value.each do |val| %>
+    $('#<%=key%>_<%=val%>').addClass('active');
+    <% end %>
+    <% else %>
+    $('#<%=key%>_<%=value%>').addClass('active');
+    <% end %>
     <% end %>
   }
 
