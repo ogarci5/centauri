@@ -33,6 +33,8 @@ ActiveRecord::Schema.define(version: 20150406204820) do
     t.datetime "updated_at",                        null: false
   end
 
+  add_index "groups_resources", ["group_id", "resource_id"], name: "index_groups_resources_on_group_id_and_resource_id", using: :btree
+
   create_table "resources", force: :cascade do |t|
     t.string   "name",              limit: 255
     t.datetime "created_at",                    null: false
